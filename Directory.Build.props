@@ -1,0 +1,20 @@
+<Project>
+
+  <Sdk Name="DotNet.ReproducibleBuilds.Isolated" Version="1.1.1"/>
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <DisableImplicitLibraryPacksFolder>true</DisableImplicitLibraryPacksFolder>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.fsproj'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarnOn>1182;$(WarnOn)</WarnOn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1" PrivateAssets="All"/>
+  </ItemGroup>
+
+</Project>

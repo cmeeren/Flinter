@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Version>0.1.0</Version>
+    <Authors>Christer van der Meeren</Authors>
+    <Description>A linter for F#.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Library.fs"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="7.0.0"/>
+  </ItemGroup>
+
+</Project>

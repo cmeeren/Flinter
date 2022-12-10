@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Flinter", "src\Flinter\Flinter.fsproj", "{E2C81B68-3B5E-4460-817F-12676D7EBEDC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F92C55DD-2AC4-4242-91D2-5B69F18FE566}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		README.md = README.md
+		Directory.Build.props = Directory.Build.props
+		global.json = global.json
+		RELEASE_NOTES.md = RELEASE_NOTES.md
+	EndProjectSection
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Flinter.Tests", "src\Flinter.Tests\Flinter.Tests.fsproj", "{6E2C370E-5F93-4B2C-8814-16B19825B84B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E2C81B68-3B5E-4460-817F-12676D7EBEDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2C81B68-3B5E-4460-817F-12676D7EBEDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2C81B68-3B5E-4460-817F-12676D7EBEDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2C81B68-3B5E-4460-817F-12676D7EBEDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E2C370E-5F93-4B2C-8814-16B19825B84B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E2C370E-5F93-4B2C-8814-16B19825B84B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E2C370E-5F93-4B2C-8814-16B19825B84B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E2C370E-5F93-4B2C-8814-16B19825B84B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {155C34DA-A581-4BDE-B1A0-55F65C49A8F2}
+	EndGlobalSection
+EndGlobal
