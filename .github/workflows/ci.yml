@@ -15,12 +15,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-    - name: Restore dependencies
-      run: dotnet restore --locked-mode
-    - name: Build
-      run: dotnet build -c Release --no-restore -maxCpuCount
-    - name: Test
-      run: dotnet test -c Release --no-build  -- Expecto.fail-on-focused-tests=true
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+
+      - name: Restore dependencies
+        run: dotnet restore --locked-mode
+
+      - name: Build
+        run: dotnet build -c Release --no-restore -maxCpuCount
+
+      - name: Test
+        run: dotnet test -c Release --no-build  -- Expecto.fail-on-focused-tests=true
