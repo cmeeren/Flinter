@@ -20,6 +20,9 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
 
+      - name: Restore tools
+        run: dotnet tool restore
+
       - name: Restore dependencies
         run: dotnet restore --locked-mode
 
