@@ -85,11 +85,10 @@ type UntypedAstVisitor() =
         | ParsedImplFileInput(contents = contents) -> contents |> List.iter (withPath >> this.VisitSynModuleOrNamespace)
 
 
-    abstract member VisitParsedInput: node: ParsedInput * path: UntypedAstNode list -> unit
+    abstract member VisitParsedInput: node: ParsedInput -> unit
 
-    default this.VisitParsedInput(node: ParsedInput, path: UntypedAstNode list) =
-        let withPath n =
-            n, UntypedAstNode.ParsedInput node :: path
+    default this.VisitParsedInput(node: ParsedInput) =
+        let withPath n = n, [ UntypedAstNode.ParsedInput node ]
 
         match node with
         | ParsedInput.ImplFile input -> input |> withPath |> this.VisitParsedImplFileInput
