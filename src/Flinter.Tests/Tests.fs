@@ -1,13 +1,7 @@
 module Tests
 
-open Expecto
+open Xunit
 
 
-[<Tests>]
-let tests =
-
-    testList "Placeholder" [
-
-        testCase "Placeholder" (fun () -> ())
-
-    ]
+[<Fact>]
+let ``Placeholder`` () = ()

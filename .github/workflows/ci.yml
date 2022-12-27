@@ -33,4 +33,4 @@ jobs:
         run: dotnet build -c Release --no-restore -maxCpuCount
 
       - name: Test
-        run: dotnet test -c Release --no-build -- Expecto.fail-on-focused-tests=true
+        run: dotnet test -c Release --no-build
