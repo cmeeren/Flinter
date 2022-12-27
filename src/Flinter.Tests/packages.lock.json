@@ -20,26 +20,6 @@
         "resolved": "6.0.1",
         "contentHash": "VrFAiW8dEEekk+0aqlbvMNZzDvYXmgWZwAt68AUBqaWK8RnoEVUNglj66bZzhs4/U63q0EfXlhcEKnH1sTYLjw=="
       },
-      "Hedgehog": {
-        "type": "Direct",
-        "requested": "[0.13.0, )",
-        "resolved": "0.13.0",
-        "contentHash": "R0QARj4V33FkqHP3f9LOUkPacq2DjpwG+BMMVfHEnJ06kVg/bL5gPccu960SrQgZGfEfoIbcGZ9oFD5oZo+raQ==",
-        "dependencies": {
-          "FSharp.Core": "[4.3.4, 99.0.0]"
-        }
-      },
-      "Hedgehog.Experimental": {
-        "type": "Direct",
-        "requested": "[0.7.0, )",
-        "resolved": "0.7.0",
-        "contentHash": "kkU7kfLeuQnzAqJY2n6XdCETGqyPPgGZfHXnRJaB+OYbzQklRM6mVCejszAELWHk4DRYu2EGnFA/Sp7CpQoqlw==",
-        "dependencies": {
-          "FSharp.Core": "[4.3.4, 99.0.0]",
-          "Hedgehog": "[0.13.0, 99.0.0]",
-          "TypeShape": "9.0.0"
-        }
-      },
       "Meziantou.Xunit.ParallelTestFramework": {
         "type": "Direct",
         "requested": "[2.1.0, )",
@@ -57,15 +37,6 @@
         "dependencies": {
           "Microsoft.CodeCoverage": "17.4.0",
           "Microsoft.TestPlatform.TestHost": "17.4.0"
-        }
-      },
-      "Unquote": {
-        "type": "Direct",
-        "requested": "[6.1.0, )",
-        "resolved": "6.1.0",
-        "contentHash": "eWcVdoxGSRqmvRr6RUN4ko73nLxiY1yhZXdqlriEucAqylcPQc/RCZDobJSnE858MA8SHXwBOX79RQuYp8Z3Cw==",
-        "dependencies": {
-          "FSharp.Core": "4.7.2"
         }
       },
       "xunit.core": {
@@ -1491,14 +1462,6 @@
           "System.Text.Encoding": "4.3.0",
           "System.Threading": "4.3.0",
           "System.Xml.ReaderWriter": "4.3.0"
-        }
-      },
-      "TypeShape": {
-        "type": "Transitive",
-        "resolved": "9.0.0",
-        "contentHash": "TFBwzUVpnJT8W4UAGNb0uQ+ZtA9wKUOZA9a825DzOZ0ejUFmLKF/QOVhMt6x9d1TsP1TxuUs/aYilKPCnttryg==",
-        "dependencies": {
-          "FSharp.Core": "4.3.2"
         }
       },
       "xunit.abstractions": {
