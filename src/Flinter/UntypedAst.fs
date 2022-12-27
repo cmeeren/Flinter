@@ -58,127 +58,131 @@ type UntypedAstNode =
 type UntypedAstVisitor() =
 
 
-    abstract member Visit: node: ParsedHashDirective * path: UntypedAstNode list -> unit
+    abstract member VisitParsedHashDirective: node: ParsedHashDirective * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: ParsedHashDirective, path: UntypedAstNode list) =
+    default this.VisitParsedHashDirective(node: ParsedHashDirective, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.ParsedHashDirective node :: path
 
         match node with
-        | ParsedHashDirective.ParsedHashDirective(args = args) -> args |> List.iter (withPath >> this.Visit)
+        | ParsedHashDirective.ParsedHashDirective(args = args) ->
+            args |> List.iter (withPath >> this.VisitParsedHashDirectiveArgument)
 
 
-    abstract member Visit: node: ParsedHashDirectiveArgument * path: UntypedAstNode list -> unit
+    abstract member VisitParsedHashDirectiveArgument:
+        node: ParsedHashDirectiveArgument * path: UntypedAstNode list -> unit
 
-    default this.Visit(_node: ParsedHashDirectiveArgument, _path: UntypedAstNode list) = ()
+    default this.VisitParsedHashDirectiveArgument(_node: ParsedHashDirectiveArgument, _path: UntypedAstNode list) = ()
 
 
-    abstract member Visit: node: ParsedImplFileInput * path: UntypedAstNode list -> unit
+    abstract member VisitParsedImplFileInput: node: ParsedImplFileInput * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: ParsedImplFileInput, path: UntypedAstNode list) =
+    default this.VisitParsedImplFileInput(node: ParsedImplFileInput, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.ParsedImplFileInput node :: path
 
         match node with
-        | ParsedImplFileInput(contents = contents) -> contents |> List.iter (withPath >> this.Visit)
+        | ParsedImplFileInput(contents = contents) -> contents |> List.iter (withPath >> this.VisitSynModuleOrNamespace)
 
 
-    abstract member Visit: node: ParsedInput * path: UntypedAstNode list -> unit
+    abstract member VisitParsedInput: node: ParsedInput * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: ParsedInput, path: UntypedAstNode list) =
+    default this.VisitParsedInput(node: ParsedInput, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.ParsedInput node :: path
 
         match node with
-        | ParsedInput.ImplFile input -> input |> withPath |> this.Visit
+        | ParsedInput.ImplFile input -> input |> withPath |> this.VisitParsedImplFileInput
         // Ignore signature files, since the code they contain is a subset of the implementation files and therefore not
         // necessary to lint.
         | ParsedInput.SigFile _ -> ()
 
 
-    abstract member Visit: node: SynArgInfo * path: UntypedAstNode list -> unit
+    abstract member VisitSynArgInfo: node: SynArgInfo * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynArgInfo, path: UntypedAstNode list) =
+    default this.VisitSynArgInfo(node: SynArgInfo, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynArgInfo node :: path
 
         match node with
-        | SynArgInfo.SynArgInfo(attributes = attributes) -> attributes |> List.iter (withPath >> this.Visit)
+        | SynArgInfo.SynArgInfo(attributes = attributes) ->
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
 
 
-    abstract member Visit: node: SynArgPats * path: UntypedAstNode list -> unit
+    abstract member VisitSynArgPats: node: SynArgPats * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynArgPats, path: UntypedAstNode list) =
+    default this.VisitSynArgPats(node: SynArgPats, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynArgPats node :: path
 
         match node with
-        | SynArgPats.Pats(pats = pats) -> pats |> List.iter (withPath >> this.Visit)
-        | SynArgPats.NamePatPairs(pats = pats) -> pats |> List.iter (fun (_, _, pat) -> pat |> withPath |> this.Visit)
+        | SynArgPats.Pats(pats = pats) -> pats |> List.iter (withPath >> this.VisitSynPat)
+        | SynArgPats.NamePatPairs(pats = pats) ->
+            pats |> List.iter (fun (_, _, pat) -> pat |> withPath |> this.VisitSynPat)
 
 
-    abstract member Visit: node: SynAttribute * path: UntypedAstNode list -> unit
+    abstract member VisitSynAttribute: node: SynAttribute * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynAttribute, path: UntypedAstNode list) =
+    default this.VisitSynAttribute(node: SynAttribute, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynAttribute node :: path
 
-        node.ArgExpr |> withPath |> this.Visit
+        node.ArgExpr |> withPath |> this.VisitSynExpr
 
 
-    abstract member Visit: node: SynAttributeList * path: UntypedAstNode list -> unit
+    abstract member VisitSynAttributeList: node: SynAttributeList * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynAttributeList, path: UntypedAstNode list) =
+    default this.VisitSynAttributeList(node: SynAttributeList, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynAttributeList node :: path
 
-        node.Attributes |> List.iter (withPath >> this.Visit)
+        node.Attributes |> List.iter (withPath >> this.VisitSynAttribute)
 
 
-    abstract member Visit: node: SynBinding * path: UntypedAstNode list -> unit
+    abstract member VisitSynBinding: node: SynBinding * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynBinding, path: UntypedAstNode list) =
+    default this.VisitSynBinding(node: SynBinding, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynBinding node :: path
 
         match node with
         | SynBinding.SynBinding(
             attributes = attributes; valData = valData; headPat = headPat; expr = expr; returnInfo = returnInfo) ->
-            attributes |> List.iter (withPath >> this.Visit)
-            valData |> withPath |> this.Visit
-            headPat |> withPath |> this.Visit
-            expr |> withPath |> this.Visit
-            returnInfo |> Option.iter (withPath >> this.Visit)
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
+            valData |> withPath |> this.VisitSynValData
+            headPat |> withPath |> this.VisitSynPat
+            expr |> withPath |> this.VisitSynExpr
+            returnInfo |> Option.iter (withPath >> this.VisitSynBindingReturnInfo)
 
 
-    abstract member Visit: node: SynBindingReturnInfo * path: UntypedAstNode list -> unit
+    abstract member VisitSynBindingReturnInfo: node: SynBindingReturnInfo * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynBindingReturnInfo, path: UntypedAstNode list) =
+    default this.VisitSynBindingReturnInfo(node: SynBindingReturnInfo, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynBindingReturnInfo node :: path
 
         match node with
         | SynBindingReturnInfo.SynBindingReturnInfo(typeName = typeName; attributes = attributes) ->
-            typeName |> withPath |> this.Visit
-            attributes |> List.iter (withPath >> this.Visit)
+            typeName |> withPath |> this.VisitSynType
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
 
 
-    abstract member Visit: node: SynComponentInfo * path: UntypedAstNode list -> unit
+    abstract member VisitSynComponentInfo: node: SynComponentInfo * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynComponentInfo, path: UntypedAstNode list) =
+    default this.VisitSynComponentInfo(node: SynComponentInfo, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynComponentInfo node :: path
 
         match node with
         | SynComponentInfo.SynComponentInfo(attributes = attributes; typeParams = typeParams; constraints = constraints) ->
-            attributes |> List.iter (withPath >> this.Visit)
-            typeParams |> Option.iter (withPath >> this.Visit)
-            constraints |> List.iter (withPath >> this.Visit)
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
+            typeParams |> Option.iter (withPath >> this.VisitSynTyparDecls)
+            constraints |> List.iter (withPath >> this.VisitSynTypeConstraint)
 
 
-    abstract member Visit: node: SynConst * path: UntypedAstNode list -> unit
+    abstract member VisitSynConst: node: SynConst * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynConst, path: UntypedAstNode list) =
+    default this.VisitSynConst(node: SynConst, path: UntypedAstNode list) =
         let withPath n = n, UntypedAstNode.SynConst node :: path
 
         match node with
@@ -203,117 +207,119 @@ type UntypedAstVisitor() =
         | SynConst.Bytes _ -> ()
         | SynConst.UInt16s _ -> ()
         | SynConst.Measure(constant, _, measure) ->
-            constant |> withPath |> this.Visit
-            measure |> withPath |> this.Visit
+            constant |> withPath |> this.VisitSynConst
+            measure |> withPath |> this.VisitSynMeasure
         | SynConst.SourceIdentifier _ -> ()
 
 
-    abstract member Visit: node: SynEnumCase * path: UntypedAstNode list -> unit
+    abstract member VisitSynEnumCase: node: SynEnumCase * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynEnumCase, path: UntypedAstNode list) =
+    default this.VisitSynEnumCase(node: SynEnumCase, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynEnumCase node :: path
 
         match node with
         | SynEnumCase.SynEnumCase(attributes = attributes; value = value) ->
-            attributes |> List.iter (withPath >> this.Visit)
-            value |> withPath |> this.Visit
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
+            value |> withPath |> this.VisitSynConst
 
 
-    abstract member Visit: node: SynExceptionDefn * path: UntypedAstNode list -> unit
+    abstract member VisitSynExceptionDefn: node: SynExceptionDefn * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynExceptionDefn, path: UntypedAstNode list) =
+    default this.VisitSynExceptionDefn(node: SynExceptionDefn, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynExceptionDefn node :: path
 
         match node with
         | SynExceptionDefn(exnRepr = exnRepr; members = members) ->
-            exnRepr |> withPath |> this.Visit
-            members |> List.iter (withPath >> this.Visit)
+            exnRepr |> withPath |> this.VisitSynExceptionDefnRepr
+            members |> List.iter (withPath >> this.VisitSynMemberDefn)
 
 
-    abstract member Visit: node: SynExceptionDefnRepr * path: UntypedAstNode list -> unit
+    abstract member VisitSynExceptionDefnRepr: node: SynExceptionDefnRepr * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynExceptionDefnRepr, path: UntypedAstNode list) =
+    default this.VisitSynExceptionDefnRepr(node: SynExceptionDefnRepr, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynExceptionDefnRepr node :: path
 
         match node with
         | SynExceptionDefnRepr.SynExceptionDefnRepr(attributes = attributes; caseName = caseName) ->
-            attributes |> List.iter (withPath >> this.Visit)
-            caseName |> withPath |> this.Visit
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
+            caseName |> withPath |> this.VisitSynUnionCase
 
 
-    abstract member Visit: node: SynExpr * path: UntypedAstNode list -> unit
+    abstract member VisitSynExpr: node: SynExpr * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynExpr, path: UntypedAstNode list) =
+    default this.VisitSynExpr(node: SynExpr, path: UntypedAstNode list) =
         let withPath n = n, UntypedAstNode.SynExpr node :: path
 
         match node with
-        | SynExpr.Paren(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.Paren(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
         | SynExpr.Quote(operator = operator; quotedExpr = quotedExpr) ->
-            operator |> withPath |> this.Visit
-            quotedExpr |> withPath |> this.Visit
+            operator |> withPath |> this.VisitSynExpr
+            quotedExpr |> withPath |> this.VisitSynExpr
 
-        | SynExpr.Const(constant = constant) -> constant |> withPath |> this.Visit
+        | SynExpr.Const(constant = constant) -> constant |> withPath |> this.VisitSynConst
 
         | SynExpr.Typed(expr = expr; targetType = targetType) ->
-            expr |> withPath |> this.Visit
-            targetType |> withPath |> this.Visit
+            expr |> withPath |> this.VisitSynExpr
+            targetType |> withPath |> this.VisitSynType
 
-        | SynExpr.Tuple(exprs = exprs) -> exprs |> List.iter (withPath >> this.Visit)
+        | SynExpr.Tuple(exprs = exprs) -> exprs |> List.iter (withPath >> this.VisitSynExpr)
 
         | SynExpr.AnonRecd(copyInfo = copyInfo; recordFields = recordFields) ->
-            copyInfo |> Option.iter (fst >> withPath >> this.Visit)
-            recordFields |> List.iter (fun (_, _, expr) -> expr |> withPath |> this.Visit)
+            copyInfo |> Option.iter (fst >> withPath >> this.VisitSynExpr)
 
-        | SynExpr.ArrayOrList(exprs = exprs) -> exprs |> List.iter (withPath >> this.Visit)
+            recordFields
+            |> List.iter (fun (_, _, expr) -> expr |> withPath |> this.VisitSynExpr)
+
+        | SynExpr.ArrayOrList(exprs = exprs) -> exprs |> List.iter (withPath >> this.VisitSynExpr)
 
         | SynExpr.Record(baseInfo = baseInfo; copyInfo = copyInfo; recordFields = recordFields) ->
             baseInfo
             |> Option.iter (fun (ty, expr, _, _, _) ->
-                ty |> withPath |> this.Visit
-                expr |> withPath |> this.Visit)
+                ty |> withPath |> this.VisitSynType
+                expr |> withPath |> this.VisitSynExpr)
 
-            copyInfo |> Option.iter (fst >> withPath >> this.Visit)
-            recordFields |> List.iter (withPath >> this.Visit)
+            copyInfo |> Option.iter (fst >> withPath >> this.VisitSynExpr)
+            recordFields |> List.iter (withPath >> this.VisitSynExprRecordField)
 
         | SynExpr.New(targetType = targetType; expr = expr) ->
-            targetType |> withPath |> this.Visit
-            expr |> withPath |> this.Visit
+            targetType |> withPath |> this.VisitSynType
+            expr |> withPath |> this.VisitSynExpr
 
         | SynExpr.ObjExpr(
             objType = objType; argOptions = argOptions; bindings = bindings; members = members; extraImpls = extraImpls) ->
-            objType |> withPath |> this.Visit
-            argOptions |> Option.iter (fst >> withPath >> this.Visit)
-            bindings |> List.iter (withPath >> this.Visit)
-            members |> List.iter (withPath >> this.Visit)
-            extraImpls |> List.iter (withPath >> this.Visit)
+            objType |> withPath |> this.VisitSynType
+            argOptions |> Option.iter (fst >> withPath >> this.VisitSynExpr)
+            bindings |> List.iter (withPath >> this.VisitSynBinding)
+            members |> List.iter (withPath >> this.VisitSynMemberDefn)
+            extraImpls |> List.iter (withPath >> this.VisitSynInterfaceImpl)
 
         | SynExpr.While(whileExpr = whileExpr; doExpr = doExpr) ->
-            whileExpr |> withPath |> this.Visit
-            doExpr |> withPath |> this.Visit
+            whileExpr |> withPath |> this.VisitSynExpr
+            doExpr |> withPath |> this.VisitSynExpr
 
         | SynExpr.For(identBody = identBody; toBody = toBody; doBody = doBody) ->
-            identBody |> withPath |> this.Visit
-            toBody |> withPath |> this.Visit
-            doBody |> withPath |> this.Visit
+            identBody |> withPath |> this.VisitSynExpr
+            toBody |> withPath |> this.VisitSynExpr
+            doBody |> withPath |> this.VisitSynExpr
 
         | SynExpr.ForEach(pat = pat; enumExpr = enumExpr; bodyExpr = bodyExpr) ->
-            pat |> withPath |> this.Visit
-            enumExpr |> withPath |> this.Visit
-            bodyExpr |> withPath |> this.Visit
+            pat |> withPath |> this.VisitSynPat
+            enumExpr |> withPath |> this.VisitSynExpr
+            bodyExpr |> withPath |> this.VisitSynExpr
 
-        | SynExpr.ArrayOrListComputed(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.ArrayOrListComputed(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
         | SynExpr.IndexRange(expr1 = expr1; expr2 = expr2) ->
-            expr1 |> Option.iter (withPath >> this.Visit)
-            expr2 |> Option.iter (withPath >> this.Visit)
+            expr1 |> Option.iter (withPath >> this.VisitSynExpr)
+            expr2 |> Option.iter (withPath >> this.VisitSynExpr)
 
-        | SynExpr.IndexFromEnd(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.IndexFromEnd(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
-        | SynExpr.ComputationExpr(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.ComputationExpr(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
         | SynExpr.Lambda(parsedData = parsedData) ->
             // TODO: Can parsedData be None?
@@ -321,144 +327,145 @@ type UntypedAstVisitor() =
             //   https://stackoverflow.com/questions/74924482/in-synexpr-lambda-what-is-the-usage-of-args-body-vs-parseddata
             parsedData
             |> Option.iter (fun (args, body) ->
-                args |> List.iter (withPath >> this.Visit)
-                body |> withPath |> this.Visit)
+                args |> List.iter (withPath >> this.VisitSynPat)
+                body |> withPath |> this.VisitSynExpr)
 
-        | SynExpr.MatchLambda(matchClauses = matchClauses) -> matchClauses |> List.iter (withPath >> this.Visit)
+        | SynExpr.MatchLambda(matchClauses = matchClauses) ->
+            matchClauses |> List.iter (withPath >> this.VisitSynMatchClause)
 
         | SynExpr.Match(expr = expr; clauses = clauses) ->
-            expr |> withPath |> this.Visit
-            clauses |> List.iter (withPath >> this.Visit)
+            expr |> withPath |> this.VisitSynExpr
+            clauses |> List.iter (withPath >> this.VisitSynMatchClause)
 
-        | SynExpr.Do(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.Do(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
-        | SynExpr.Assert(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.Assert(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
         | SynExpr.App(isInfix = isInfix; funcExpr = funcExpr; argExpr = argExpr) ->
             if isInfix then
                 // Reverse the expressions to match source order (not sure this is important in the context of Flinter)
-                argExpr |> withPath |> this.Visit
-                funcExpr |> withPath |> this.Visit
+                argExpr |> withPath |> this.VisitSynExpr
+                funcExpr |> withPath |> this.VisitSynExpr
             else
-                funcExpr |> withPath |> this.Visit
-                argExpr |> withPath |> this.Visit
+                funcExpr |> withPath |> this.VisitSynExpr
+                argExpr |> withPath |> this.VisitSynExpr
 
         | SynExpr.TypeApp(expr = expr; typeArgs = typeArgs) ->
-            expr |> withPath |> this.Visit
-            typeArgs |> List.iter (withPath >> this.Visit)
+            expr |> withPath |> this.VisitSynExpr
+            typeArgs |> List.iter (withPath >> this.VisitSynType)
 
         | SynExpr.LetOrUse(bindings = bindings; body = body) ->
-            bindings |> List.iter (withPath >> this.Visit)
-            body |> withPath |> this.Visit
+            bindings |> List.iter (withPath >> this.VisitSynBinding)
+            body |> withPath |> this.VisitSynExpr
 
         | SynExpr.TryWith(tryExpr = tryExpr; withCases = withCases) ->
-            tryExpr |> withPath |> this.Visit
-            withCases |> List.iter (withPath >> this.Visit)
+            tryExpr |> withPath |> this.VisitSynExpr
+            withCases |> List.iter (withPath >> this.VisitSynMatchClause)
 
         | SynExpr.TryFinally(tryExpr = tryExpr; finallyExpr = finallyExpr) ->
-            tryExpr |> withPath |> this.Visit
-            finallyExpr |> withPath |> this.Visit
+            tryExpr |> withPath |> this.VisitSynExpr
+            finallyExpr |> withPath |> this.VisitSynExpr
 
-        | SynExpr.Lazy(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.Lazy(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
         | SynExpr.Sequential(expr1 = expr1; expr2 = expr2) ->
-            expr1 |> withPath |> this.Visit
-            expr2 |> withPath |> this.Visit
+            expr1 |> withPath |> this.VisitSynExpr
+            expr2 |> withPath |> this.VisitSynExpr
 
         | SynExpr.IfThenElse(ifExpr = ifExpr; thenExpr = thenExpr; elseExpr = elseExpr) ->
-            ifExpr |> withPath |> this.Visit
-            thenExpr |> withPath |> this.Visit
-            elseExpr |> Option.iter (withPath >> this.Visit)
+            ifExpr |> withPath |> this.VisitSynExpr
+            thenExpr |> withPath |> this.VisitSynExpr
+            elseExpr |> Option.iter (withPath >> this.VisitSynExpr)
 
-        | SynExpr.Typar(typar = typar) -> typar |> withPath |> this.Visit
+        | SynExpr.Typar(typar = typar) -> typar |> withPath |> this.VisitSynTypar
 
         | SynExpr.Ident _ -> ()
 
         | SynExpr.LongIdent _ -> ()
 
-        | SynExpr.LongIdentSet(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.LongIdentSet(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
-        | SynExpr.DotGet(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.DotGet(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
         | SynExpr.DotSet(targetExpr = targetExpr; rhsExpr = rhsExpr) ->
-            targetExpr |> withPath |> this.Visit
-            rhsExpr |> withPath |> this.Visit
+            targetExpr |> withPath |> this.VisitSynExpr
+            rhsExpr |> withPath |> this.VisitSynExpr
 
         | SynExpr.Set(targetExpr = targetExpr; rhsExpr = rhsExpr) ->
-            targetExpr |> withPath |> this.Visit
-            rhsExpr |> withPath |> this.Visit
+            targetExpr |> withPath |> this.VisitSynExpr
+            rhsExpr |> withPath |> this.VisitSynExpr
 
         | SynExpr.DotIndexedGet(objectExpr = objectExpr; indexArgs = indexArgs) ->
-            objectExpr |> withPath |> this.Visit
-            indexArgs |> withPath |> this.Visit
+            objectExpr |> withPath |> this.VisitSynExpr
+            indexArgs |> withPath |> this.VisitSynExpr
 
         | SynExpr.DotIndexedSet(objectExpr = objectExpr; indexArgs = indexArgs; valueExpr = valueExpr) ->
-            objectExpr |> withPath |> this.Visit
-            indexArgs |> withPath |> this.Visit
-            valueExpr |> withPath |> this.Visit
+            objectExpr |> withPath |> this.VisitSynExpr
+            indexArgs |> withPath |> this.VisitSynExpr
+            valueExpr |> withPath |> this.VisitSynExpr
 
         | SynExpr.NamedIndexedPropertySet(expr1 = expr1; expr2 = expr2) ->
-            expr1 |> withPath |> this.Visit
-            expr2 |> withPath |> this.Visit
+            expr1 |> withPath |> this.VisitSynExpr
+            expr2 |> withPath |> this.VisitSynExpr
 
         | SynExpr.DotNamedIndexedPropertySet(targetExpr = targetExpr; argExpr = argExpr; rhsExpr = rhsExpr) ->
-            targetExpr |> withPath |> this.Visit
-            argExpr |> withPath |> this.Visit
-            rhsExpr |> withPath |> this.Visit
+            targetExpr |> withPath |> this.VisitSynExpr
+            argExpr |> withPath |> this.VisitSynExpr
+            rhsExpr |> withPath |> this.VisitSynExpr
 
         | SynExpr.TypeTest(expr = expr; targetType = targetType) ->
-            expr |> withPath |> this.Visit
-            targetType |> withPath |> this.Visit
+            expr |> withPath |> this.VisitSynExpr
+            targetType |> withPath |> this.VisitSynType
 
         | SynExpr.Upcast(expr = expr; targetType = targetType) ->
-            expr |> withPath |> this.Visit
-            targetType |> withPath |> this.Visit
+            expr |> withPath |> this.VisitSynExpr
+            targetType |> withPath |> this.VisitSynType
 
         | SynExpr.Downcast(expr = expr; targetType = targetType) ->
-            expr |> withPath |> this.Visit
-            targetType |> withPath |> this.Visit
+            expr |> withPath |> this.VisitSynExpr
+            targetType |> withPath |> this.VisitSynType
 
-        | SynExpr.InferredUpcast(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.InferredUpcast(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
-        | SynExpr.InferredDowncast(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.InferredDowncast(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
         | SynExpr.Null _ -> ()
 
-        | SynExpr.AddressOf(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.AddressOf(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
         | SynExpr.TraitCall(supportTys = supportTys; traitSig = traitSig; argExpr = argExpr) ->
-            supportTys |> List.iter (withPath >> this.Visit)
-            traitSig |> withPath |> this.Visit
-            argExpr |> withPath |> this.Visit
+            supportTys |> List.iter (withPath >> this.VisitSynType)
+            traitSig |> withPath |> this.VisitSynMemberSig
+            argExpr |> withPath |> this.VisitSynExpr
 
         | SynExpr.JoinIn(lhsExpr = lhsExpr; rhsExpr = rhsExpr) ->
-            lhsExpr |> withPath |> this.Visit
-            rhsExpr |> withPath |> this.Visit
+            lhsExpr |> withPath |> this.VisitSynExpr
+            rhsExpr |> withPath |> this.VisitSynExpr
 
         | SynExpr.ImplicitZero _ -> ()
 
         // TODO: Should this be ignored?
         | SynExpr.SequentialOrImplicitYield(expr1 = expr1; expr2 = expr2; ifNotStmt = ifNotStmt) ->
-            expr1 |> withPath |> this.Visit
-            expr2 |> withPath |> this.Visit
+            expr1 |> withPath |> this.VisitSynExpr
+            expr2 |> withPath |> this.VisitSynExpr
             // TODO: What is this?
-            ifNotStmt |> withPath |> this.Visit
+            ifNotStmt |> withPath |> this.VisitSynExpr
 
-        | SynExpr.YieldOrReturn(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.YieldOrReturn(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
-        | SynExpr.YieldOrReturnFrom(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.YieldOrReturnFrom(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
         | SynExpr.LetOrUseBang(pat = pat; rhs = rhs; andBangs = andBangs; body = body) ->
-            pat |> withPath |> this.Visit
-            rhs |> withPath |> this.Visit
-            andBangs |> List.iter (withPath >> this.Visit)
-            body |> withPath |> this.Visit
+            pat |> withPath |> this.VisitSynPat
+            rhs |> withPath |> this.VisitSynExpr
+            andBangs |> List.iter (withPath >> this.VisitSynExprAndBang)
+            body |> withPath |> this.VisitSynExpr
 
         | SynExpr.MatchBang(expr = expr; clauses = clauses) ->
-            expr |> withPath |> this.Visit
-            clauses |> List.iter (withPath >> this.Visit)
+            expr |> withPath |> this.VisitSynExpr
+            clauses |> List.iter (withPath >> this.VisitSynMatchClause)
 
-        | SynExpr.DoBang(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.DoBang(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
         | SynExpr.LibraryOnlyILAssembly _ -> ()
 
@@ -471,405 +478,409 @@ type UntypedAstVisitor() =
         | SynExpr.ArbitraryAfterError _ -> ()
 
         // TODO: Should this be ignored?
-        | SynExpr.FromParseError(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.FromParseError(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
         // TODO: Should this be ignored?
-        | SynExpr.DiscardAfterMissingQualificationAfterDot(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.DiscardAfterMissingQualificationAfterDot(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
-        | SynExpr.Fixed(expr = expr) -> expr |> withPath |> this.Visit
+        | SynExpr.Fixed(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
-        | SynExpr.InterpolatedString(contents = contents) -> contents |> List.iter (withPath >> this.Visit)
+        | SynExpr.InterpolatedString(contents = contents) ->
+            contents |> List.iter (withPath >> this.VisitSynInterpolatedStringPart)
 
         // TODO: What is this? Should it be ignored?
-        | SynExpr.DebugPoint(innerExpr = innerExpr) -> innerExpr |> withPath |> this.Visit
+        | SynExpr.DebugPoint(innerExpr = innerExpr) -> innerExpr |> withPath |> this.VisitSynExpr
 
         | SynExpr.Dynamic(funcExpr = funcExpr; argExpr = argExpr) ->
-            funcExpr |> withPath |> this.Visit
-            argExpr |> withPath |> this.Visit
+            funcExpr |> withPath |> this.VisitSynExpr
+            argExpr |> withPath |> this.VisitSynExpr
 
 
-    abstract member Visit: node: SynExprAndBang * path: UntypedAstNode list -> unit
+    abstract member VisitSynExprAndBang: node: SynExprAndBang * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynExprAndBang, path: UntypedAstNode list) =
+    default this.VisitSynExprAndBang(node: SynExprAndBang, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynExprAndBang node :: path
 
         match node with
         | SynExprAndBang.SynExprAndBang(pat = pat; body = body) ->
-            pat |> withPath |> this.Visit
-            body |> withPath |> this.Visit
+            pat |> withPath |> this.VisitSynPat
+            body |> withPath |> this.VisitSynExpr
 
 
-    abstract member Visit: node: SynExprRecordField * path: UntypedAstNode list -> unit
+    abstract member VisitSynExprRecordField: node: SynExprRecordField * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynExprRecordField, path: UntypedAstNode list) =
+    default this.VisitSynExprRecordField(node: SynExprRecordField, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynExprRecordField node :: path
 
         match node with
-        | SynExprRecordField.SynExprRecordField(expr = expr) -> expr |> Option.iter (withPath >> this.Visit)
+        | SynExprRecordField.SynExprRecordField(expr = expr) -> expr |> Option.iter (withPath >> this.VisitSynExpr)
 
 
-    abstract member Visit: node: SynField * path: UntypedAstNode list -> unit
+    abstract member VisitSynField: node: SynField * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynField, path: UntypedAstNode list) =
+    default this.VisitSynField(node: SynField, path: UntypedAstNode list) =
         let withPath n = n, UntypedAstNode.SynField node :: path
 
         match node with
         | SynField.SynField(attributes = attributes; fieldType = fieldType) ->
-            attributes |> List.iter (withPath >> this.Visit)
-            fieldType |> withPath |> this.Visit
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
+            fieldType |> withPath |> this.VisitSynType
 
 
-    abstract member Visit: node: SynInterfaceImpl * path: UntypedAstNode list -> unit
+    abstract member VisitSynInterfaceImpl: node: SynInterfaceImpl * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynInterfaceImpl, path: UntypedAstNode list) =
+    default this.VisitSynInterfaceImpl(node: SynInterfaceImpl, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynInterfaceImpl node :: path
 
         match node with
         | SynInterfaceImpl.SynInterfaceImpl(interfaceTy = interfaceTy; bindings = bindings; members = members) ->
-            interfaceTy |> withPath |> this.Visit
-            bindings |> List.iter (withPath >> this.Visit)
-            members |> List.iter (withPath >> this.Visit)
+            interfaceTy |> withPath |> this.VisitSynType
+            bindings |> List.iter (withPath >> this.VisitSynBinding)
+            members |> List.iter (withPath >> this.VisitSynMemberDefn)
 
 
-    abstract member Visit: node: SynInterpolatedStringPart * path: UntypedAstNode list -> unit
+    abstract member VisitSynInterpolatedStringPart: node: SynInterpolatedStringPart * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynInterpolatedStringPart, path: UntypedAstNode list) =
+    default this.VisitSynInterpolatedStringPart(node: SynInterpolatedStringPart, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynInterpolatedStringPart node :: path
 
         match node with
         | SynInterpolatedStringPart.String _ -> ()
-        | SynInterpolatedStringPart.FillExpr(fillExpr = fillExpr) -> fillExpr |> withPath |> this.Visit
+        | SynInterpolatedStringPart.FillExpr(fillExpr = fillExpr) -> fillExpr |> withPath |> this.VisitSynExpr
 
 
-    abstract member Visit: node: SynMatchClause * path: UntypedAstNode list -> unit
+    abstract member VisitSynMatchClause: node: SynMatchClause * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynMatchClause, path: UntypedAstNode list) =
+    default this.VisitSynMatchClause(node: SynMatchClause, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynMatchClause node :: path
 
         match node with
         | SynMatchClause.SynMatchClause(pat = pat; whenExpr = whenExpr; resultExpr = resultExpr) ->
-            pat |> withPath |> this.Visit
-            whenExpr |> Option.iter (withPath >> this.Visit)
-            resultExpr |> withPath |> this.Visit
+            pat |> withPath |> this.VisitSynPat
+            whenExpr |> Option.iter (withPath >> this.VisitSynExpr)
+            resultExpr |> withPath |> this.VisitSynExpr
 
 
-    abstract member Visit: node: SynMeasure * path: UntypedAstNode list -> unit
+    abstract member VisitSynMeasure: node: SynMeasure * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynMeasure, path: UntypedAstNode list) =
+    default this.VisitSynMeasure(node: SynMeasure, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynMeasure node :: path
 
         match node with
         | SynMeasure.Named _ -> ()
         | SynMeasure.Product(measure1 = measure1; measure2 = measure2) ->
-            measure1 |> withPath |> this.Visit
-            measure2 |> withPath |> this.Visit
-        | SynMeasure.Seq(measures = measures) -> measures |> List.iter (withPath >> this.Visit)
+            measure1 |> withPath |> this.VisitSynMeasure
+            measure2 |> withPath |> this.VisitSynMeasure
+        | SynMeasure.Seq(measures = measures) -> measures |> List.iter (withPath >> this.VisitSynMeasure)
         | SynMeasure.Divide(measure1 = measure1; measure2 = measure2) ->
-            measure1 |> withPath |> this.Visit
-            measure2 |> withPath |> this.Visit
-        | SynMeasure.Power(measure = measure) -> measure |> withPath |> this.Visit
+            measure1 |> withPath |> this.VisitSynMeasure
+            measure2 |> withPath |> this.VisitSynMeasure
+        | SynMeasure.Power(measure = measure) -> measure |> withPath |> this.VisitSynMeasure
         | SynMeasure.One -> ()
-        | SynMeasure.Var(typar = typar) -> typar |> withPath |> this.Visit
+        | SynMeasure.Var(typar = typar) -> typar |> withPath |> this.VisitSynTypar
         | SynMeasure.Anon _ -> ()
-        | SynMeasure.Paren(measure = measure) -> measure |> withPath |> this.Visit
+        | SynMeasure.Paren(measure = measure) -> measure |> withPath |> this.VisitSynMeasure
 
 
-    abstract member Visit: node: SynMemberDefn * path: UntypedAstNode list -> unit
+    abstract member VisitSynMemberDefn: node: SynMemberDefn * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynMemberDefn, path: UntypedAstNode list) =
+    default this.VisitSynMemberDefn(node: SynMemberDefn, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynMemberDefn node :: path
 
         match node with
-        | SynMemberDefn.Open(target = target) -> target |> withPath |> this.Visit
-        | SynMemberDefn.Member(memberDefn = memberDefn) -> memberDefn |> withPath |> this.Visit
+        | SynMemberDefn.Open(target = target) -> target |> withPath |> this.VisitSynOpenDeclTarget
+        | SynMemberDefn.Member(memberDefn = memberDefn) -> memberDefn |> withPath |> this.VisitSynBinding
         | SynMemberDefn.GetSetMember(memberDefnForGet = memberDefnForGet; memberDefnForSet = memberDefnForSet) ->
-            memberDefnForGet |> Option.iter (withPath >> this.Visit)
-            memberDefnForSet |> Option.iter (withPath >> this.Visit)
+            memberDefnForGet |> Option.iter (withPath >> this.VisitSynBinding)
+            memberDefnForSet |> Option.iter (withPath >> this.VisitSynBinding)
         // TODO: Should this be ignored?
         | SynMemberDefn.ImplicitCtor(attributes = attributes; ctorArgs = ctorArgs) ->
-            attributes |> List.iter (withPath >> this.Visit)
-            ctorArgs |> withPath |> this.Visit
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
+            ctorArgs |> withPath |> this.VisitSynSimplePats
         | SynMemberDefn.ImplicitInherit(inheritType = inheritType; inheritArgs = inheritArgs) ->
-            inheritType |> withPath |> this.Visit
-            inheritArgs |> withPath |> this.Visit
-        | SynMemberDefn.LetBindings(bindings = bindings) -> bindings |> List.iter (withPath >> this.Visit)
-        | SynMemberDefn.AbstractSlot(slotSig = slotSig) -> slotSig |> withPath |> this.Visit
+            inheritType |> withPath |> this.VisitSynType
+            inheritArgs |> withPath |> this.VisitSynExpr
+        | SynMemberDefn.LetBindings(bindings = bindings) -> bindings |> List.iter (withPath >> this.VisitSynBinding)
+        | SynMemberDefn.AbstractSlot(slotSig = slotSig) -> slotSig |> withPath |> this.VisitSynValSig
         | SynMemberDefn.Interface(interfaceType = interfaceType; members = members) ->
-            interfaceType |> withPath |> this.Visit
-            members |> Option.iter (List.iter (withPath >> this.Visit))
-        | SynMemberDefn.Inherit(baseType = baseType) -> baseType |> withPath |> this.Visit
-        | SynMemberDefn.ValField(fieldInfo = fieldInfo) -> fieldInfo |> withPath |> this.Visit
-        | SynMemberDefn.NestedType(typeDefn = typeDefn) -> typeDefn |> withPath |> this.Visit
+            interfaceType |> withPath |> this.VisitSynType
+            members |> Option.iter (List.iter (withPath >> this.VisitSynMemberDefn))
+        | SynMemberDefn.Inherit(baseType = baseType) -> baseType |> withPath |> this.VisitSynType
+        | SynMemberDefn.ValField(fieldInfo = fieldInfo) -> fieldInfo |> withPath |> this.VisitSynField
+        | SynMemberDefn.NestedType(typeDefn = typeDefn) -> typeDefn |> withPath |> this.VisitSynTypeDefn
         | SynMemberDefn.AutoProperty(attributes = attributes; typeOpt = typeOpt; synExpr = synExpr) ->
-            attributes |> List.iter (withPath >> this.Visit)
-            typeOpt |> Option.iter (withPath >> this.Visit)
-            synExpr |> withPath |> this.Visit
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
+            typeOpt |> Option.iter (withPath >> this.VisitSynType)
+            synExpr |> withPath |> this.VisitSynExpr
 
 
-    abstract member Visit: node: SynMemberSig * path: UntypedAstNode list -> unit
+    abstract member VisitSynMemberSig: node: SynMemberSig * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynMemberSig, path: UntypedAstNode list) =
+    default this.VisitSynMemberSig(node: SynMemberSig, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynMemberSig node :: path
 
         match node with
-        | SynMemberSig.Member(memberSig = memberSig) -> memberSig |> withPath |> this.Visit
-        | SynMemberSig.Interface(interfaceType = interfaceType) -> interfaceType |> withPath |> this.Visit
-        | SynMemberSig.Inherit(inheritedType = inheritedType) -> inheritedType |> withPath |> this.Visit
-        | SynMemberSig.ValField(field = field) -> field |> withPath |> this.Visit
-        | SynMemberSig.NestedType(nestedType = nestedType) -> nestedType |> withPath |> this.Visit
+        | SynMemberSig.Member(memberSig = memberSig) -> memberSig |> withPath |> this.VisitSynValSig
+        | SynMemberSig.Interface(interfaceType = interfaceType) -> interfaceType |> withPath |> this.VisitSynType
+        | SynMemberSig.Inherit(inheritedType = inheritedType) -> inheritedType |> withPath |> this.VisitSynType
+        | SynMemberSig.ValField(field = field) -> field |> withPath |> this.VisitSynField
+        | SynMemberSig.NestedType(nestedType = nestedType) -> nestedType |> withPath |> this.VisitSynTypeDefnSig
 
 
-    abstract member Visit: node: SynModuleDecl * path: UntypedAstNode list -> unit
+    abstract member VisitSynModuleDecl: node: SynModuleDecl * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynModuleDecl, path: UntypedAstNode list) =
+    default this.VisitSynModuleDecl(node: SynModuleDecl, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynModuleDecl node :: path
 
         match node with
-        | SynModuleDecl.Attributes(attributes = attributes) -> attributes |> List.iter (withPath >> this.Visit)
-        | SynModuleDecl.Exception(exnDefn = exnDefn) -> exnDefn |> withPath |> this.Visit
-        | SynModuleDecl.Expr(expr = expr) -> expr |> withPath |> this.Visit
-        | SynModuleDecl.HashDirective(hashDirective = hashDirective) -> hashDirective |> withPath |> this.Visit
-        | SynModuleDecl.Let(bindings = bindings) -> bindings |> List.iter (withPath >> this.Visit)
+        | SynModuleDecl.Attributes(attributes = attributes) ->
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
+        | SynModuleDecl.Exception(exnDefn = exnDefn) -> exnDefn |> withPath |> this.VisitSynExceptionDefn
+        | SynModuleDecl.Expr(expr = expr) -> expr |> withPath |> this.VisitSynExpr
+        | SynModuleDecl.HashDirective(hashDirective = hashDirective) ->
+            hashDirective |> withPath |> this.VisitParsedHashDirective
+        | SynModuleDecl.Let(bindings = bindings) -> bindings |> List.iter (withPath >> this.VisitSynBinding)
         | SynModuleDecl.ModuleAbbrev _ -> ()
-        | SynModuleDecl.NamespaceFragment(fragment = fragment) -> fragment |> withPath |> this.Visit
+        | SynModuleDecl.NamespaceFragment(fragment = fragment) -> fragment |> withPath |> this.VisitSynModuleOrNamespace
         | SynModuleDecl.NestedModule(moduleInfo = moduleInfo; decls = decls) ->
-            moduleInfo |> withPath |> this.Visit
-            decls |> List.iter (withPath >> this.Visit)
-        | SynModuleDecl.Open(target = target) -> target |> withPath |> this.Visit
-        | SynModuleDecl.Types(typeDefns = typeDefns) -> typeDefns |> List.iter (withPath >> this.Visit)
+            moduleInfo |> withPath |> this.VisitSynComponentInfo
+            decls |> List.iter (withPath >> this.VisitSynModuleDecl)
+        | SynModuleDecl.Open(target = target) -> target |> withPath |> this.VisitSynOpenDeclTarget
+        | SynModuleDecl.Types(typeDefns = typeDefns) -> typeDefns |> List.iter (withPath >> this.VisitSynTypeDefn)
 
 
-    abstract member Visit: node: SynModuleOrNamespace * path: UntypedAstNode list -> unit
+    abstract member VisitSynModuleOrNamespace: node: SynModuleOrNamespace * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynModuleOrNamespace, path: UntypedAstNode list) =
+    default this.VisitSynModuleOrNamespace(node: SynModuleOrNamespace, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynModuleOrNamespace node :: path
 
         match node with
         | SynModuleOrNamespace.SynModuleOrNamespace(decls = decls; attribs = attribs) ->
-            attribs |> List.iter (withPath >> this.Visit)
-            decls |> List.iter (withPath >> this.Visit)
+            attribs |> List.iter (withPath >> this.VisitSynAttributeList)
+            decls |> List.iter (withPath >> this.VisitSynModuleDecl)
 
 
-    abstract member Visit: node: SynOpenDeclTarget * path: UntypedAstNode list -> unit
+    abstract member VisitSynOpenDeclTarget: node: SynOpenDeclTarget * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynOpenDeclTarget, path: UntypedAstNode list) =
+    default this.VisitSynOpenDeclTarget(node: SynOpenDeclTarget, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynOpenDeclTarget node :: path
 
         match node with
         | SynOpenDeclTarget.ModuleOrNamespace _ -> ()
-        | SynOpenDeclTarget.Type(typeName = typeName) -> typeName |> withPath |> this.Visit
+        | SynOpenDeclTarget.Type(typeName = typeName) -> typeName |> withPath |> this.VisitSynType
 
 
-    abstract member Visit: node: SynPat * path: UntypedAstNode list -> unit
+    abstract member VisitSynPat: node: SynPat * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynPat, path: UntypedAstNode list) =
+    default this.VisitSynPat(node: SynPat, path: UntypedAstNode list) =
         let withPath n = n, UntypedAstNode.SynPat node :: path
 
         match node with
-        | SynPat.Const(constant = constant) -> constant |> withPath |> this.Visit
+        | SynPat.Const(constant = constant) -> constant |> withPath |> this.VisitSynConst
         | SynPat.Wild _ -> ()
         | SynPat.Named _ -> ()
         | SynPat.Typed(pat = pat; targetType = targetType) ->
-            pat |> withPath |> this.Visit
-            targetType |> withPath |> this.Visit
+            pat |> withPath |> this.VisitSynPat
+            targetType |> withPath |> this.VisitSynType
         | SynPat.Attrib(pat = pat; attributes = attributes) ->
-            pat |> withPath |> this.Visit
-            attributes |> List.iter (withPath >> this.Visit)
+            pat |> withPath |> this.VisitSynPat
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
         | SynPat.Or(lhsPat = lhsPat; rhsPat = rhsPat) ->
-            lhsPat |> withPath |> this.Visit
-            rhsPat |> withPath |> this.Visit
-        | SynPat.Ands(pats = pats) -> pats |> List.iter (withPath >> this.Visit)
+            lhsPat |> withPath |> this.VisitSynPat
+            rhsPat |> withPath |> this.VisitSynPat
+        | SynPat.Ands(pats = pats) -> pats |> List.iter (withPath >> this.VisitSynPat)
         | SynPat.As(lhsPat = lhsPat; rhsPat = rhsPat) ->
-            lhsPat |> withPath |> this.Visit
-            rhsPat |> withPath |> this.Visit
+            lhsPat |> withPath |> this.VisitSynPat
+            rhsPat |> withPath |> this.VisitSynPat
         | SynPat.LongIdent(typarDecls = typarDecls; argPats = argPats) ->
-            typarDecls |> Option.iter (withPath >> this.Visit)
-            argPats |> withPath |> this.Visit
-        | SynPat.Tuple(elementPats = elementPats) -> elementPats |> List.iter (withPath >> this.Visit)
-        | SynPat.Paren(pat = pat) -> pat |> withPath |> this.Visit
-        | SynPat.ArrayOrList(elementPats = elementPats) -> elementPats |> List.iter (withPath >> this.Visit)
+            typarDecls |> Option.iter (withPath >> this.VisitSynValTyparDecls)
+            argPats |> withPath |> this.VisitSynArgPats
+        | SynPat.Tuple(elementPats = elementPats) -> elementPats |> List.iter (withPath >> this.VisitSynPat)
+        | SynPat.Paren(pat = pat) -> pat |> withPath |> this.VisitSynPat
+        | SynPat.ArrayOrList(elementPats = elementPats) -> elementPats |> List.iter (withPath >> this.VisitSynPat)
         | SynPat.Record(fieldPats = fieldPats) ->
-            fieldPats |> List.iter (fun (_, _, pat) -> pat |> withPath |> this.Visit)
+            fieldPats |> List.iter (fun (_, _, pat) -> pat |> withPath |> this.VisitSynPat)
         | SynPat.Null _ -> ()
         | SynPat.OptionalVal _ -> ()
-        | SynPat.IsInst(pat = pat) -> pat |> withPath |> this.Visit
-        | SynPat.QuoteExpr(expr = expr) -> expr |> withPath |> this.Visit
+        | SynPat.IsInst(pat = pat) -> pat |> withPath |> this.VisitSynType
+        | SynPat.QuoteExpr(expr = expr) -> expr |> withPath |> this.VisitSynExpr
         | SynPat.DeprecatedCharRange _ -> ()
         | SynPat.InstanceMember _ -> ()
         | SynPat.FromParseError _ -> ()
 
 
-    abstract member Visit: node: SynSimplePat * path: UntypedAstNode list -> unit
+    abstract member VisitSynSimplePat: node: SynSimplePat * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynSimplePat, path: UntypedAstNode list) =
+    default this.VisitSynSimplePat(node: SynSimplePat, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynSimplePat node :: path
 
         match node with
         | SynSimplePat.Id _ -> ()
         | SynSimplePat.Typed(pat = pat; targetType = targetType) ->
-            pat |> withPath |> this.Visit
-            targetType |> withPath |> this.Visit
+            pat |> withPath |> this.VisitSynSimplePat
+            targetType |> withPath |> this.VisitSynType
         | SynSimplePat.Attrib(pat = pat; attributes = attributes) ->
-            pat |> withPath |> this.Visit
-            attributes |> List.iter (withPath >> this.Visit)
+            pat |> withPath |> this.VisitSynSimplePat
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
 
 
-    abstract member Visit: node: SynSimplePats * path: UntypedAstNode list -> unit
+    abstract member VisitSynSimplePats: node: SynSimplePats * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynSimplePats, path: UntypedAstNode list) =
+    default this.VisitSynSimplePats(node: SynSimplePats, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynSimplePats node :: path
 
         match node with
-        | SynSimplePats.SimplePats(pats = pats) -> pats |> List.iter (withPath >> this.Visit)
+        | SynSimplePats.SimplePats(pats = pats) -> pats |> List.iter (withPath >> this.VisitSynSimplePat)
         | SynSimplePats.Typed(pats = pats; targetType = targetType) ->
-            pats |> withPath |> this.Visit
-            targetType |> withPath |> this.Visit
+            pats |> withPath |> this.VisitSynSimplePats
+            targetType |> withPath |> this.VisitSynType
 
 
-    abstract member Visit: node: SynTupleTypeSegment * path: UntypedAstNode list -> unit
+    abstract member VisitSynTupleTypeSegment: node: SynTupleTypeSegment * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynTupleTypeSegment, path: UntypedAstNode list) =
+    default this.VisitSynTupleTypeSegment(node: SynTupleTypeSegment, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynTupleTypeSegment node :: path
 
         match node with
-        | SynTupleTypeSegment.Type(typeName = typeName) -> typeName |> withPath |> this.Visit
+        | SynTupleTypeSegment.Type(typeName = typeName) -> typeName |> withPath |> this.VisitSynType
         | SynTupleTypeSegment.Star _ -> ()
         | SynTupleTypeSegment.Slash _ -> ()
 
 
-    abstract member Visit: node: SynTypar * path: UntypedAstNode list -> unit
+    abstract member VisitSynTypar: node: SynTypar * path: UntypedAstNode list -> unit
 
-    default this.Visit(_node: SynTypar, _path: UntypedAstNode list) = ()
+    default this.VisitSynTypar(_node: SynTypar, _path: UntypedAstNode list) = ()
 
 
-    abstract member Visit: node: SynTyparDecl * path: UntypedAstNode list -> unit
+    abstract member VisitSynTyparDecl: node: SynTyparDecl * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynTyparDecl, path: UntypedAstNode list) =
+    default this.VisitSynTyparDecl(node: SynTyparDecl, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynTyparDecl node :: path
 
         match node with
-        | SynTyparDecl.SynTyparDecl(attributes = attributes) -> attributes |> List.iter (withPath >> this.Visit)
+        | SynTyparDecl.SynTyparDecl(attributes = attributes) ->
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
 
 
-    abstract member Visit: node: SynTyparDecls * path: UntypedAstNode list -> unit
+    abstract member VisitSynTyparDecls: node: SynTyparDecls * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynTyparDecls, path: UntypedAstNode list) =
+    default this.VisitSynTyparDecls(node: SynTyparDecls, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynTyparDecls node :: path
 
         match node with
         | SynTyparDecls.PostfixList(decls = decls; constraints = constraints) ->
-            decls |> List.iter (withPath >> this.Visit)
-            constraints |> List.iter (withPath >> this.Visit)
-        | SynTyparDecls.PrefixList(decls = decls) -> decls |> List.iter (withPath >> this.Visit)
-        | SynTyparDecls.SinglePrefix(decl = decl) -> decl |> withPath |> this.Visit
+            decls |> List.iter (withPath >> this.VisitSynTyparDecl)
+            constraints |> List.iter (withPath >> this.VisitSynTypeConstraint)
+        | SynTyparDecls.PrefixList(decls = decls) -> decls |> List.iter (withPath >> this.VisitSynTyparDecl)
+        | SynTyparDecls.SinglePrefix(decl = decl) -> decl |> withPath |> this.VisitSynTyparDecl
 
 
-    abstract member Visit: node: SynType * path: UntypedAstNode list -> unit
+    abstract member VisitSynType: node: SynType * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynType, path: UntypedAstNode list) =
+    default this.VisitSynType(node: SynType, path: UntypedAstNode list) =
         let withPath n = n, UntypedAstNode.SynType node :: path
 
         match node with
         | SynType.LongIdent _ -> ()
         | SynType.App(typeName = typeName; typeArgs = typeArgs) ->
-            typeName |> withPath |> this.Visit
-            typeArgs |> List.iter (withPath >> this.Visit)
+            typeName |> withPath |> this.VisitSynType
+            typeArgs |> List.iter (withPath >> this.VisitSynType)
         | SynType.LongIdentApp(typeName = typeName; typeArgs = typeArgs) ->
-            typeName |> withPath |> this.Visit
-            typeArgs |> List.iter (withPath >> this.Visit)
-        | SynType.Tuple(path = path) -> path |> List.iter (withPath >> this.Visit)
-        | SynType.AnonRecd(fields = fields) -> fields |> List.iter (snd >> withPath >> this.Visit)
-        | SynType.Array(elementType = elementType) -> elementType |> withPath |> this.Visit
+            typeName |> withPath |> this.VisitSynType
+            typeArgs |> List.iter (withPath >> this.VisitSynType)
+        | SynType.Tuple(path = path) -> path |> List.iter (withPath >> this.VisitSynTupleTypeSegment)
+        | SynType.AnonRecd(fields = fields) -> fields |> List.iter (snd >> withPath >> this.VisitSynType)
+        | SynType.Array(elementType = elementType) -> elementType |> withPath |> this.VisitSynType
         | SynType.Fun(argType = argType; returnType = returnType) ->
-            argType |> withPath |> this.Visit
-            returnType |> withPath |> this.Visit
-        | SynType.Var(typar = typar) -> typar |> withPath |> this.Visit
+            argType |> withPath |> this.VisitSynType
+            returnType |> withPath |> this.VisitSynType
+        | SynType.Var(typar = typar) -> typar |> withPath |> this.VisitSynTypar
         | SynType.Anon _ -> ()
         | SynType.WithGlobalConstraints(typeName = typeName; constraints = constraints) ->
-            typeName |> withPath |> this.Visit
-            constraints |> List.iter (withPath >> this.Visit)
-        | SynType.HashConstraint(innerType = innerType) -> innerType |> withPath |> this.Visit
-        | SynType.MeasurePower(baseMeasure = baseMeasure) -> baseMeasure |> withPath |> this.Visit
+            typeName |> withPath |> this.VisitSynType
+            constraints |> List.iter (withPath >> this.VisitSynTypeConstraint)
+        | SynType.HashConstraint(innerType = innerType) -> innerType |> withPath |> this.VisitSynType
+        | SynType.MeasurePower(baseMeasure = baseMeasure) -> baseMeasure |> withPath |> this.VisitSynType
         | SynType.MeasureDivide(dividend = dividend; divisor = divisor) ->
-            dividend |> withPath |> this.Visit
-            divisor |> withPath |> this.Visit
-        | SynType.StaticConstant(constant = constant) -> constant |> withPath |> this.Visit
-        | SynType.StaticConstantExpr(expr = expr) -> expr |> withPath |> this.Visit
+            dividend |> withPath |> this.VisitSynType
+            divisor |> withPath |> this.VisitSynType
+        | SynType.StaticConstant(constant = constant) -> constant |> withPath |> this.VisitSynConst
+        | SynType.StaticConstantExpr(expr = expr) -> expr |> withPath |> this.VisitSynExpr
         | SynType.StaticConstantNamed(ident = ident; value = value) ->
-            ident |> withPath |> this.Visit
-            value |> withPath |> this.Visit
-        | SynType.Paren(innerType = innerType) -> innerType |> withPath |> this.Visit
+            ident |> withPath |> this.VisitSynType
+            value |> withPath |> this.VisitSynType
+        | SynType.Paren(innerType = innerType) -> innerType |> withPath |> this.VisitSynType
         | SynType.SignatureParameter(attributes = attributes; usedType = usedType) ->
-            attributes |> List.iter (withPath >> this.Visit)
-            usedType |> withPath |> this.Visit
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
+            usedType |> withPath |> this.VisitSynType
 
 
-    abstract member Visit: node: SynTypeConstraint * path: UntypedAstNode list -> unit
+    abstract member VisitSynTypeConstraint: node: SynTypeConstraint * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynTypeConstraint, path: UntypedAstNode list) =
+    default this.VisitSynTypeConstraint(node: SynTypeConstraint, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynTypeConstraint node :: path
 
         match node with
-        | SynTypeConstraint.WhereTyparIsValueType(typar = typar) -> typar |> withPath |> this.Visit
-        | SynTypeConstraint.WhereTyparIsReferenceType(typar = typar) -> typar |> withPath |> this.Visit
-        | SynTypeConstraint.WhereTyparIsUnmanaged(typar = typar) -> typar |> withPath |> this.Visit
-        | SynTypeConstraint.WhereTyparSupportsNull(typar = typar) -> typar |> withPath |> this.Visit
-        | SynTypeConstraint.WhereTyparIsComparable(typar = typar) -> typar |> withPath |> this.Visit
-        | SynTypeConstraint.WhereTyparIsEquatable(typar = typar) -> typar |> withPath |> this.Visit
+        | SynTypeConstraint.WhereTyparIsValueType(typar = typar) -> typar |> withPath |> this.VisitSynTypar
+        | SynTypeConstraint.WhereTyparIsReferenceType(typar = typar) -> typar |> withPath |> this.VisitSynTypar
+        | SynTypeConstraint.WhereTyparIsUnmanaged(typar = typar) -> typar |> withPath |> this.VisitSynTypar
+        | SynTypeConstraint.WhereTyparSupportsNull(typar = typar) -> typar |> withPath |> this.VisitSynTypar
+        | SynTypeConstraint.WhereTyparIsComparable(typar = typar) -> typar |> withPath |> this.VisitSynTypar
+        | SynTypeConstraint.WhereTyparIsEquatable(typar = typar) -> typar |> withPath |> this.VisitSynTypar
         | SynTypeConstraint.WhereTyparDefaultsToType(typar = typar; typeName = typeName) ->
-            typar |> withPath |> this.Visit
-            typeName |> withPath |> this.Visit
+            typar |> withPath |> this.VisitSynTypar
+            typeName |> withPath |> this.VisitSynType
         | SynTypeConstraint.WhereTyparSubtypeOfType(typar = typar; typeName = typeName) ->
-            typar |> withPath |> this.Visit
-            typeName |> withPath |> this.Visit
+            typar |> withPath |> this.VisitSynTypar
+            typeName |> withPath |> this.VisitSynType
         | SynTypeConstraint.WhereTyparSupportsMember(typars = typars; memberSig = memberSig) ->
-            typars |> List.iter (withPath >> this.Visit)
-            memberSig |> withPath |> this.Visit
+            typars |> List.iter (withPath >> this.VisitSynType)
+            memberSig |> withPath |> this.VisitSynMemberSig
         | SynTypeConstraint.WhereTyparIsEnum(typar = typar; typeArgs = typeArgs) ->
-            typar |> withPath |> this.Visit
-            typeArgs |> List.iter (withPath >> this.Visit)
+            typar |> withPath |> this.VisitSynTypar
+            typeArgs |> List.iter (withPath >> this.VisitSynType)
         | SynTypeConstraint.WhereTyparIsDelegate(typar = typar; typeArgs = typeArgs) ->
-            typar |> withPath |> this.Visit
-            typeArgs |> List.iter (withPath >> this.Visit)
+            typar |> withPath |> this.VisitSynTypar
+            typeArgs |> List.iter (withPath >> this.VisitSynType)
         | SynTypeConstraint.WhereSelfConstrained(selfConstraint = selfConstraint) ->
-            selfConstraint |> withPath |> this.Visit
+            selfConstraint |> withPath |> this.VisitSynType
 
 
-    abstract member Visit: node: SynTypeDefn * path: UntypedAstNode list -> unit
+    abstract member VisitSynTypeDefn: node: SynTypeDefn * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynTypeDefn, path: UntypedAstNode list) =
+    default this.VisitSynTypeDefn(node: SynTypeDefn, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynTypeDefn node :: path
 
         match node with
         | SynTypeDefn.SynTypeDefn(
             typeInfo = typeInfo; typeRepr = typeRepr; members = members; implicitConstructor = implicitConstructor) ->
-            typeInfo |> withPath |> this.Visit
-            typeRepr |> withPath |> this.Visit
-            members |> List.iter (withPath >> this.Visit)
-            implicitConstructor |> Option.iter (withPath >> this.Visit)
+            typeInfo |> withPath |> this.VisitSynComponentInfo
+            typeRepr |> withPath |> this.VisitSynTypeDefnRepr
+            members |> List.iter (withPath >> this.VisitSynMemberDefn)
+            implicitConstructor |> Option.iter (withPath >> this.VisitSynMemberDefn)
 
 
-    abstract member Visit: node: SynTypeDefnKind * path: UntypedAstNode list -> unit
+    abstract member VisitSynTypeDefnKind: node: SynTypeDefnKind * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynTypeDefnKind, path: UntypedAstNode list) =
+    default this.VisitSynTypeDefnKind(node: SynTypeDefnKind, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynTypeDefnKind node :: path
 
@@ -885,126 +896,127 @@ type UntypedAstVisitor() =
         | SynTypeDefnKind.Augmentation _ -> ()
         | SynTypeDefnKind.IL -> ()
         | SynTypeDefnKind.Delegate(signature = signature; signatureInfo = signatureInfo) ->
-            signature |> withPath |> this.Visit
-            signatureInfo |> withPath |> this.Visit
+            signature |> withPath |> this.VisitSynType
+            signatureInfo |> withPath |> this.VisitSynValInfo
 
 
-    abstract member Visit: node: SynTypeDefnRepr * path: UntypedAstNode list -> unit
+    abstract member VisitSynTypeDefnRepr: node: SynTypeDefnRepr * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynTypeDefnRepr, path: UntypedAstNode list) =
+    default this.VisitSynTypeDefnRepr(node: SynTypeDefnRepr, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynTypeDefnRepr node :: path
 
         match node with
         | SynTypeDefnRepr.ObjectModel(kind = kind; members = members) ->
-            kind |> withPath |> this.Visit
-            members |> List.iter (withPath >> this.Visit)
-        | SynTypeDefnRepr.Simple(simpleRepr = simpleRepr) -> simpleRepr |> withPath |> this.Visit
-        | SynTypeDefnRepr.Exception(exnRepr = exnRepr) -> exnRepr |> withPath |> this.Visit
+            kind |> withPath |> this.VisitSynTypeDefnKind
+            members |> List.iter (withPath >> this.VisitSynMemberDefn)
+        | SynTypeDefnRepr.Simple(simpleRepr = simpleRepr) -> simpleRepr |> withPath |> this.VisitSynTypeDefnSimpleRepr
+        | SynTypeDefnRepr.Exception(exnRepr = exnRepr) -> exnRepr |> withPath |> this.VisitSynExceptionDefnRepr
 
 
-    abstract member Visit: node: SynTypeDefnSig * path: UntypedAstNode list -> unit
+    abstract member VisitSynTypeDefnSig: node: SynTypeDefnSig * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynTypeDefnSig, path: UntypedAstNode list) =
+    default this.VisitSynTypeDefnSig(node: SynTypeDefnSig, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynTypeDefnSig node :: path
 
         match node with
         | SynTypeDefnSig.SynTypeDefnSig(typeInfo = typeInfo; typeRepr = typeRepr; members = members) ->
-            typeInfo |> withPath |> this.Visit
-            typeRepr |> withPath |> this.Visit
-            members |> List.iter (withPath >> this.Visit)
+            typeInfo |> withPath |> this.VisitSynComponentInfo
+            typeRepr |> withPath |> this.VisitSynTypeDefnSigRepr
+            members |> List.iter (withPath >> this.VisitSynMemberSig)
 
 
-    abstract member Visit: node: SynTypeDefnSigRepr * path: UntypedAstNode list -> unit
+    abstract member VisitSynTypeDefnSigRepr: node: SynTypeDefnSigRepr * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynTypeDefnSigRepr, path: UntypedAstNode list) =
+    default this.VisitSynTypeDefnSigRepr(node: SynTypeDefnSigRepr, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynTypeDefnSigRepr node :: path
 
         match node with
         | SynTypeDefnSigRepr.ObjectModel(kind = kind; memberSigs = memberSigs) ->
-            kind |> withPath |> this.Visit
-            memberSigs |> List.iter (withPath >> this.Visit)
-        | SynTypeDefnSigRepr.Simple(repr = repr) -> repr |> withPath |> this.Visit
-        | SynTypeDefnSigRepr.Exception(repr = repr) -> repr |> withPath |> this.Visit
+            kind |> withPath |> this.VisitSynTypeDefnKind
+            memberSigs |> List.iter (withPath >> this.VisitSynMemberSig)
+        | SynTypeDefnSigRepr.Simple(repr = repr) -> repr |> withPath |> this.VisitSynTypeDefnSimpleRepr
+        | SynTypeDefnSigRepr.Exception(repr = repr) -> repr |> withPath |> this.VisitSynExceptionDefnRepr
 
 
-    abstract member Visit: node: SynTypeDefnSimpleRepr * path: UntypedAstNode list -> unit
+    abstract member VisitSynTypeDefnSimpleRepr: node: SynTypeDefnSimpleRepr * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynTypeDefnSimpleRepr, path: UntypedAstNode list) =
+    default this.VisitSynTypeDefnSimpleRepr(node: SynTypeDefnSimpleRepr, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynTypeDefnSimpleRepr node :: path
 
         match node with
-        | SynTypeDefnSimpleRepr.Union(unionCases = unionCases) -> unionCases |> List.iter (withPath >> this.Visit)
-        | SynTypeDefnSimpleRepr.Enum(cases = cases) -> cases |> List.iter (withPath >> this.Visit)
+        | SynTypeDefnSimpleRepr.Union(unionCases = unionCases) ->
+            unionCases |> List.iter (withPath >> this.VisitSynUnionCase)
+        | SynTypeDefnSimpleRepr.Enum(cases = cases) -> cases |> List.iter (withPath >> this.VisitSynEnumCase)
         | SynTypeDefnSimpleRepr.Record(recordFields = recordFields) ->
-            recordFields |> List.iter (withPath >> this.Visit)
+            recordFields |> List.iter (withPath >> this.VisitSynField)
         | SynTypeDefnSimpleRepr.General(kind = kind; inherits = inherits; slotsigs = slotsigs; fields = fields) ->
-            kind |> withPath |> this.Visit
-            inherits |> List.iter (fun (t, _, _) -> t |> withPath |> this.Visit)
+            kind |> withPath |> this.VisitSynTypeDefnKind
+            inherits |> List.iter (fun (t, _, _) -> t |> withPath |> this.VisitSynType)
             // TODO: Use 'slotsigs'? Docs says 'this is not a parse-tree form'
-            slotsigs |> List.iter (fst >> withPath >> this.Visit)
-            fields |> List.iter (withPath >> this.Visit)
+            slotsigs |> List.iter (fst >> withPath >> this.VisitSynValSig)
+            fields |> List.iter (withPath >> this.VisitSynField)
         | SynTypeDefnSimpleRepr.LibraryOnlyILAssembly _ -> ()
         | SynTypeDefnSimpleRepr.TypeAbbrev(detail = detail; rhsType = rhsType) ->
             match detail with
-            | ParserDetail.Ok -> rhsType |> withPath |> this.Visit
+            | ParserDetail.Ok -> rhsType |> withPath |> this.VisitSynType
             | ParserDetail.ErrorRecovery -> ()
         | SynTypeDefnSimpleRepr.None _ -> ()
-        | SynTypeDefnSimpleRepr.Exception(exnRepr = exnRepr) -> exnRepr |> withPath |> this.Visit
+        | SynTypeDefnSimpleRepr.Exception(exnRepr = exnRepr) -> exnRepr |> withPath |> this.VisitSynExceptionDefnRepr
 
 
-    abstract member Visit: node: SynUnionCase * path: UntypedAstNode list -> unit
+    abstract member VisitSynUnionCase: node: SynUnionCase * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynUnionCase, path: UntypedAstNode list) =
+    default this.VisitSynUnionCase(node: SynUnionCase, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynUnionCase node :: path
 
         match node with
         | SynUnionCase.SynUnionCase(attributes = attributes; caseType = caseType) ->
-            attributes |> List.iter (withPath >> this.Visit)
-            caseType |> withPath |> this.Visit
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
+            caseType |> withPath |> this.VisitSynUnionCaseKind
 
 
-    abstract member Visit: node: SynUnionCaseKind * path: UntypedAstNode list -> unit
+    abstract member VisitSynUnionCaseKind: node: SynUnionCaseKind * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynUnionCaseKind, path: UntypedAstNode list) =
+    default this.VisitSynUnionCaseKind(node: SynUnionCaseKind, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynUnionCaseKind node :: path
 
         match node with
-        | SynUnionCaseKind.Fields(cases = cases) -> cases |> List.iter (withPath >> this.Visit)
+        | SynUnionCaseKind.Fields(cases = cases) -> cases |> List.iter (withPath >> this.VisitSynField)
         | SynUnionCaseKind.FullType(fullType = fullType; fullTypeInfo = fullTypeInfo) ->
-            fullType |> withPath |> this.Visit
-            fullTypeInfo |> withPath |> this.Visit
+            fullType |> withPath |> this.VisitSynType
+            fullTypeInfo |> withPath |> this.VisitSynValInfo
 
 
-    abstract member Visit: node: SynValData * path: UntypedAstNode list -> unit
+    abstract member VisitSynValData: node: SynValData * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynValData, path: UntypedAstNode list) =
+    default this.VisitSynValData(node: SynValData, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynValData node :: path
 
         match node with
-        | SynValData.SynValData(valInfo = valInfo) -> valInfo |> withPath |> this.Visit
+        | SynValData.SynValData(valInfo = valInfo) -> valInfo |> withPath |> this.VisitSynValInfo
 
 
-    abstract member Visit: node: SynValInfo * path: UntypedAstNode list -> unit
+    abstract member VisitSynValInfo: node: SynValInfo * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynValInfo, path: UntypedAstNode list) =
+    default this.VisitSynValInfo(node: SynValInfo, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynValInfo node :: path
 
         match node with
         | SynValInfo.SynValInfo(curriedArgInfos = curriedArgInfos) ->
-            curriedArgInfos |> List.iter (List.iter (withPath >> this.Visit))
+            curriedArgInfos |> List.iter (List.iter (withPath >> this.VisitSynArgInfo))
 
 
-    abstract member Visit: node: SynValSig * path: UntypedAstNode list -> unit
+    abstract member VisitSynValSig: node: SynValSig * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynValSig, path: UntypedAstNode list) =
+    default this.VisitSynValSig(node: SynValSig, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynValSig node :: path
 
@@ -1015,18 +1027,19 @@ type UntypedAstVisitor() =
             synType = synType
             arity = arity
             synExpr = synExpr) ->
-            attributes |> List.iter (withPath >> this.Visit)
-            explicitTypeParams |> withPath |> this.Visit
-            synType |> withPath |> this.Visit
-            arity |> withPath |> this.Visit
-            synExpr |> Option.iter (withPath >> this.Visit)
+            attributes |> List.iter (withPath >> this.VisitSynAttributeList)
+            explicitTypeParams |> withPath |> this.VisitSynValTyparDecls
+            synType |> withPath |> this.VisitSynType
+            arity |> withPath |> this.VisitSynValInfo
+            synExpr |> Option.iter (withPath >> this.VisitSynExpr)
 
 
-    abstract member Visit: node: SynValTyparDecls * path: UntypedAstNode list -> unit
+    abstract member VisitSynValTyparDecls: node: SynValTyparDecls * path: UntypedAstNode list -> unit
 
-    default this.Visit(node: SynValTyparDecls, path: UntypedAstNode list) =
+    default this.VisitSynValTyparDecls(node: SynValTyparDecls, path: UntypedAstNode list) =
         let withPath n =
             n, UntypedAstNode.SynValTyparDecls node :: path
 
         match node with
-        | SynValTyparDecls.SynValTyparDecls(typars = typars) -> typars |> Option.iter (withPath >> this.Visit)
+        | SynValTyparDecls.SynValTyparDecls(typars = typars) ->
+            typars |> Option.iter (withPath >> this.VisitSynTyparDecls)
