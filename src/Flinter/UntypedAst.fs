@@ -82,7 +82,9 @@ type UntypedAstVisitor() =
             n, UntypedAstNode.ParsedImplFileInput node :: path
 
         match node with
-        | ParsedImplFileInput(contents = contents) -> contents |> List.iter (withPath >> this.VisitSynModuleOrNamespace)
+        | ParsedImplFileInput(hashDirectives = hashDirectives; contents = contents) ->
+            hashDirectives |> List.iter (withPath >> this.VisitParsedHashDirective)
+            contents |> List.iter (withPath >> this.VisitSynModuleOrNamespace)
 
 
     abstract member VisitParsedInput: node: ParsedInput -> unit
