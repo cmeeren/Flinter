@@ -1291,7 +1291,6 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Analyzers.SDK": "[0.11.0, )",
-          "FSharp.Compiler.Service": "[41.0.1, )",
           "FSharp.Core": "[6.0.1, )"
         }
       }

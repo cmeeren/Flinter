@@ -25,9 +25,14 @@
           "McMaster.NETCore.Plugins": "1.4.0"
         }
       },
-      "FSharp.Compiler.Service": {
+      "FSharp.Core": {
         "type": "Direct",
-        "requested": "[41.0.1, )",
+        "requested": "[6.0.1, )",
+        "resolved": "6.0.1",
+        "contentHash": "VrFAiW8dEEekk+0aqlbvMNZzDvYXmgWZwAt68AUBqaWK8RnoEVUNglj66bZzhs4/U63q0EfXlhcEKnH1sTYLjw=="
+      },
+      "FSharp.Compiler.Service": {
+        "type": "Transitive",
         "resolved": "41.0.1",
         "contentHash": "L56531sGtef2t9CGqJru8zsG9hb56PFZsPM62M8fosldYeAS0GVv2Y1NqGHg0SIm7VhTxerqZY9dTdQDyUzsBA==",
         "dependencies": {
@@ -58,12 +63,6 @@
           "System.Threading.Thread": "4.3.0",
           "System.Threading.ThreadPool": "4.3.0"
         }
-      },
-      "FSharp.Core": {
-        "type": "Direct",
-        "requested": "[6.0.1, )",
-        "resolved": "6.0.1",
-        "contentHash": "VrFAiW8dEEekk+0aqlbvMNZzDvYXmgWZwAt68AUBqaWK8RnoEVUNglj66bZzhs4/U63q0EfXlhcEKnH1sTYLjw=="
       },
       "McMaster.NETCore.Plugins": {
         "type": "Transitive",
