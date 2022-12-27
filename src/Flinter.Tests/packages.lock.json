@@ -14,6 +14,15 @@
           "Microsoft.SourceLink.GitLab": "1.1.1"
         }
       },
+      "FluentAssertions": {
+        "type": "Direct",
+        "requested": "[6.8.0, )",
+        "resolved": "6.8.0",
+        "contentHash": "NfSlAG97wMxS48Ov+wQEhJITdn4bKrgtKrG4sCPrFBVKozpC57lQ2vzsPdxUOsPbfEgEQTMtvCDECxIlDBfgNA==",
+        "dependencies": {
+          "System.Configuration.ConfigurationManager": "4.4.0"
+        }
+      },
       "FSharp.Core": {
         "type": "Direct",
         "requested": "[6.0.1, )",
