@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="236"
+   height="236"
+   viewBox="0 0 62.441665 62.441668"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="flinter-logo.svg"
+   inkscape:export-filename="flinter-logo-128x128.png"
+   inkscape:export-xdpi="52.067795"
+   inkscape:export-ydpi="52.067795"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#999999"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="false"
+     units="px"
+     width="236px"
+     inkscape:zoom="2"
+     inkscape:cx="-218.5"
+     inkscape:cy="100"
+     inkscape:window-width="3840"
+     inkscape:window-height="2054"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g354"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g354"
+       transform="matrix(0.95541582,0,0,0.95541582,0.5501261,0.05910807)">
+      <path
+         id="path9393"
+         style="fill:#378bba;fill-opacity:1;stroke:none;stroke-width:0.456224px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 26.54888,1.9551509 4.151098,41.6634461 h 3.21872 L 38.069033,1.9551509 Z" />
+      <g
+         id="g227"
+         transform="matrix(1.4094995,0,0,1.4094995,-13.214735,-13.486448)">
+        <path
+           style="fill:#378bba;fill-opacity:1;stroke:none;stroke-width:0.0583585px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 32.501052,41.840285 6.536144,6.536144 -6.536144,6.536144 v -3.26807 l 3.268072,-3.268074 -3.268072,-3.268072 z"
+           id="path4912"
+           sodipodi:nodetypes="ccccccc" />
+        <path
+           style="fill:#30b9db;fill-opacity:1;stroke:none;stroke-width:0.0583585px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 32.034185,54.912573 v -3.26807 l -3.268074,-3.268074 3.268074,-3.268072 v -3.268072 l -6.769579,6.536144 z"
+           id="path13640"
+           sodipodi:nodetypes="ccccccc" />
+      </g>
+    </g>
+  </g>
+</svg>
