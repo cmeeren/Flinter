@@ -6,7 +6,6 @@
     <Compile Include="Assertions.fs" />
     <Compile Include="ConsistencyTests.fs" />
     <Compile Include="Analyzers\FLN*\**\*.fs" />
-    <Compile Include="Tests.fs" />
   </ItemGroup>
 
   <ItemGroup>
