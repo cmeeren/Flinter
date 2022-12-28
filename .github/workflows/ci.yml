@@ -29,7 +29,7 @@ jobs:
         run: dotnet test -c Release --no-build
 
       - name: Push
-        if: startsWith(github.ref, 'v/')
+        if: startsWith(github.ref, 'refs/tags/v/')
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: dotnet nuget push "**/*.nupkg" -k "$NUGET_API_KEY" --skip-duplicate
