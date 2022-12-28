@@ -67,4 +67,7 @@ type StringAssertions with
         if Array.isEmpty msgs then
             messages.Should().BeEmpty("the source contained no marks")
         else
-            messages.Should().MatchRespectively(msgs)
+            messages
+                .Should()
+                .HaveCount(msgs.Length, "the source contained that many marks")
+                .And.MatchRespectively(msgs)
