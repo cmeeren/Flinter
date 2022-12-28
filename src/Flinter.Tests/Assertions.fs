@@ -41,7 +41,6 @@ type ConcreteGenericExtensions() =
 
 type StringAssertions with
 
-    [<CustomAssertion>]
     member this.ContainOnlyMarkedErrors(analyze: Analyzer) =
         let marker = '^'
 
@@ -64,4 +63,8 @@ type StringAssertions with
         let source = String.concat Environment.NewLine sourceLines
         let msgs = ranges |> Seq.map (fun (start, end') -> Msg(start, end')) |> Seq.toArray
         let messages = source |> Context.fromProcessedTestSource |> analyze
-        messages.Should().MatchRespectively(msgs)
+
+        if Array.isEmpty msgs then
+            messages.Should().BeEmpty("the source contained no marks")
+        else
+            messages.Should().MatchRespectively(msgs)
