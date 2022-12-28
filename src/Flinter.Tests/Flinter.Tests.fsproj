@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <Compile Include="Utils.fs" />
     <Compile Include="Tests.fs" />
   </ItemGroup>
 
