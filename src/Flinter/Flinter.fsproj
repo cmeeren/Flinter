@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <Compile Include="UntypedAst.fs" />
+    <Compile Include="Analyzers\Helpers.fs" />
+    <Compile Include="Analyzers\FLN*\**\*.fs" />
     <Compile Include="Library.fs" />
   </ItemGroup>
 
