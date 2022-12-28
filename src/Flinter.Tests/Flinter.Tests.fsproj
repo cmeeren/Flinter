@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <Compile Include="Utils.fs" />
+    <Compile Include="AnalyzerBootstrap.fs" />
     <Compile Include="Tests.fs" />
   </ItemGroup>
 
