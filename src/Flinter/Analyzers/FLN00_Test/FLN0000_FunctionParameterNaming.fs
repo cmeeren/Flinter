@@ -1,10 +1,13 @@
 module Flinter.Analyzers.FLN0000_FunctionParameterNaming
 
 open System
-open FSharp.Analyzers.SDK
+
 open FSharp.Compiler.Syntax
-open Flinter.Analyzers
+
+open FSharp.Analyzers.SDK
+
 open Flinter.Ast
+open Flinter.Analyzers
 
 
 let private createMsg (i: Ident) =

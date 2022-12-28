@@ -2,10 +2,12 @@
 module AnalyzerBootstrap
 
 open System
-open FSharp.Analyzers.SDK
+
 open FSharp.Compiler.CodeAnalysis
 open FSharp.Compiler.EditorServices
 open FSharp.Compiler.Text
+
+open FSharp.Analyzers.SDK
 
 
 /// Much of this is from:

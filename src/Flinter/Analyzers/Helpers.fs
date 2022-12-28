@@ -4,7 +4,9 @@ module Flinter.Analyzers.Helpers
 open System.IO
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
+
 open FSharp.Analyzers.SDK
+
 open Flinter.Ast
 
 

@@ -4,7 +4,9 @@ module Assertions
 open System
 open System.Runtime.CompilerServices
 open System.Text.RegularExpressions
+
 open FSharp.Analyzers.SDK
+
 open FluentAssertions
 open FluentAssertions.Collections
 open FluentAssertions.Primitives

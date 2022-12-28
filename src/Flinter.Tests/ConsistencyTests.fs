@@ -2,6 +2,7 @@ module Consistency
 
 open System.IO
 open System.Reflection
+open Xunit
 open FluentAssertions
 
 

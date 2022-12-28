@@ -1,8 +1,8 @@
 module FLN0001_FunctionParameterNaming
 
-open Flinter.Analyzers.FLN0000_FunctionParameterNaming
-open FluentAssertions
 open Xunit
+open FluentAssertions
+open Flinter.Analyzers.FLN0000_FunctionParameterNaming
 
 
 [<Fact>]
