@@ -6,6 +6,24 @@ open Xunit
 
 
 [<Fact>]
+let ``Returns correct message data for an invalid parameter`` () =
+    """
+    let f a Foo c = 0
+            ^^^
+    """
+        .Should()
+        .ContainOnlyMarkedErrors(analyze)
+        .And
+        .MatchRespectively(
+            Msg(
+                message = "The parameter name 'Foo' does not follow the rule for parameter names.",
+                code = "FLN0000",
+                type' = "FunctionParameterNaming"
+            )
+        )
+
+
+[<Fact>]
 let ``Does not trigger on valid function parameter names`` () =
     """
     let f a b c = 0
@@ -22,24 +40,6 @@ let ``Does not trigger on method parameter names`` () =
     """
         .Should()
         .ContainOnlyMarkedErrors(analyze)
-
-
-[<Fact>]
-let ``Returns correct message data for an invalid parameter`` () =
-    """
-    let f a Foo c = 0
-            ^^^
-    """
-        .Should()
-        .ContainOnlyMarkedErrors(analyze)
-        .And
-        .MatchRespectively(
-            Msg(
-                message = "The parameter name 'Foo' does not follow the rule for parameter names.",
-                code = "FLN0000",
-                type' = "FunctionParameterNaming"
-            )
-        )
 
 
 [<Fact>]
