@@ -8,6 +8,7 @@
     <Description>A linter for F#.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>F# analyzers compiler tooling editor lint linter</PackageTags>
+    <PackageReleaseNotes>https://github.com/cmeeren/Flinter/blob/master/RELEASE_NOTES.md</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
