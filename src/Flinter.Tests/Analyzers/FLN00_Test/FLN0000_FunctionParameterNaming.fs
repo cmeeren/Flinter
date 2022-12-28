@@ -7,47 +7,37 @@ open Xunit
 
 [<Fact>]
 let ``Does not trigger on valid function parameter names`` () =
-    let source =
-        """
-        let f a b c = 0
-        """
-
-    let messages = source |> Context.fromTestSource |> analyze
-
-    messages.Should().BeEmpty("")
+    """
+    let f a b c = 0
+    """
+        .Should()
+        .ContainOnlyMarkedErrors(analyze)
 
 
 [<Fact>]
 let ``Does not trigger on method parameter names`` () =
-    let source =
-        """
-        type A() =
-            method _.A(Foo) = 1
-        """
-
-    let messages = source |> Context.fromTestSource |> analyze
-
-    messages.Should().BeEmpty("")
+    """
+    type A() =
+        method _.A(Foo) = 1
+    """
+        .Should()
+        .ContainOnlyMarkedErrors(analyze)
 
 
 [<Fact>]
 let ``Returns correct message data for an invalid parameter`` () =
-    let source =
-        """
-        let f a Foo c = 0
-        """
-
-    let messages = source |> Context.fromTestSource |> analyze
-
-    messages
+    """
+    let f a Foo c = 0
+            ^^^
+    """
         .Should()
+        .ContainOnlyMarkedErrors(analyze)
+        .And
         .MatchRespectively(
             Msg(
-                (1, 8),
-                (1, 11),
-                "The parameter name 'Foo' does not follow the rule for parameter names.",
-                "FLN0000",
-                "FunctionParameterNaming"
+                message = "The parameter name 'Foo' does not follow the rule for parameter names.",
+                code = "FLN0000",
+                type' = "FunctionParameterNaming"
             )
         )
 
