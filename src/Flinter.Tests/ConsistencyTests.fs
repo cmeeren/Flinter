@@ -3,7 +3,7 @@ module Consistency
 open System.IO
 open System.Reflection
 open FluentAssertions
-open Xunit
+
 
 let testProjectPath =
     // Can't use __SOURCE_DIRECTORY__ because that fails on CI, likely due to DotNet.ReproducibleBuilds
