@@ -1,10 +1,14 @@
 module Consistency
 
 open System.IO
+open System.Reflection
 open FluentAssertions
 open Xunit
 
-let testProjectPath = __SOURCE_DIRECTORY__
+let testProjectPath =
+    // Can't use __SOURCE_DIRECTORY__ because that fails on CI, likely due to DotNet.ReproducibleBuilds
+    Path.Combine(Assembly.GetExecutingAssembly().Location, "..", "..", "..", "..")
+
 let testProjectAnalyzersPath = Path.Combine(testProjectPath, "Analyzers")
 let analyzerProjectPath = Path.Combine(testProjectPath, "..", "Flinter")
 let analyzerProjectAnalyzersPath = Path.Combine(analyzerProjectPath, "Analyzers")
