@@ -317,9 +317,6 @@ type UntypedAstVisitor() =
         | SynExpr.ComputationExpr(expr = expr) -> expr |> withPath |> this.VisitSynExpr
 
         | SynExpr.Lambda(parsedData = parsedData) ->
-            // TODO: Can parsedData be None?
-            // TODO: Should we ever use 'args'/'body' (i.e., after transformation from 'function' to 'fun v -> match v with')?
-            //   https://stackoverflow.com/questions/74924482/in-synexpr-lambda-what-is-the-usage-of-args-body-vs-parseddata
             parsedData
             |> Option.iter (fun (args, body) ->
                 args |> List.iter (withPath >> this.VisitSynPat)
