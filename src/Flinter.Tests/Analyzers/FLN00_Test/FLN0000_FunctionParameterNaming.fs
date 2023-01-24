@@ -13,8 +13,7 @@ let ``Returns correct message data for an invalid parameter`` () =
     """
         .Should()
         .ContainOnlyMarkedErrors(analyze)
-        .And
-        .MatchRespectively(
+        .And.MatchRespectively(
             Msg(
                 message = "The parameter name 'Foo' does not follow the rule for parameter names.",
                 code = "FLN0000",
