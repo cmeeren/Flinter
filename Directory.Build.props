@@ -10,7 +10,7 @@
 
   <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.fsproj'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarnOn>1182;$(WarnOn)</WarnOn>
+    <WarnOn>1182;3390;$(WarnOn)</WarnOn>
   </PropertyGroup>
 
   <ItemGroup>
