@@ -35,7 +35,6 @@ type Message with
         Message.Create(message, range, Severity.Warning, ruleFilePath)
 
 
-
 let createUntypedAnalyzer (getVisitor: _ -> #UntypedAstVisitor) : Analyzer =
     fun (context: Context) ->
         let messages = ResizeArray()

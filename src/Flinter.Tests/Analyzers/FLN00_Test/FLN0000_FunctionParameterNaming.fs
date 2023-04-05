@@ -54,7 +54,6 @@ let ``Handles multiple invalid parameter names in multiple top-level functions``
         .ContainOnlyMarkedErrors(analyze)
 
 
-
 [<Fact>]
 let ``Handles inner functions`` () =
     """
