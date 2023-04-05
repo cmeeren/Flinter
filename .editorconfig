@@ -19,3 +19,4 @@ self_closing_tag_style = space
 indent_size = 4
 fsharp_multiline_bracket_style = stroustrup
 fsharp_keep_max_number_of_blank_lines = 2
+fsharp_newline_before_multiline_computation_expression = false
