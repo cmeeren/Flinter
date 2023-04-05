@@ -18,4 +18,4 @@ self_closing_tag_style = space
 [*.fs]
 indent_size = 4
 fsharp_multiline_bracket_style = stroustrup
-fsharp_keep_max_number_of_blank_lines = 3
+fsharp_keep_max_number_of_blank_lines = 2
