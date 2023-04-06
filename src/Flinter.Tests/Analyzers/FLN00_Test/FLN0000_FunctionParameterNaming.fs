@@ -32,10 +32,11 @@ let ``Does not trigger on valid function parameter names`` () =
 
 
 [<Fact>]
-let ``Does not trigger on method parameter names`` () =
+let ``Handles instance method parameter names`` () =
     """
     type A() =
         member _.A(Foo) = 1
+                   ^^^
     """
         .Should()
         .ContainOnlyMarkedErrors(analyze)
