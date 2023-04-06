@@ -4,6 +4,7 @@ module AnalyzerBootstrap
 open System
 
 open FSharp.Compiler.CodeAnalysis
+open FSharp.Compiler.Diagnostics
 open FSharp.Compiler.EditorServices
 open FSharp.Compiler.Text
 
@@ -38,7 +39,16 @@ module Context =
         let parsingOptions, _diagnostics =
             checker.GetParsingOptionsFromProjectOptions(projectOptions)
 
-        return! checker.ParseFile(filename, sourceText, parsingOptions)
+        let! parseResults = checker.ParseFile(filename, sourceText, parsingOptions)
+
+        let errs =
+            parseResults.Diagnostics
+            |> Array.filter (fun d -> d.Severity = FSharpDiagnosticSeverity.Error)
+
+        if errs.Length > 0 then
+            failwith $"Parse produced these errors: %A{parseResults.Diagnostics}"
+
+        return parseResults
     }
 
 
@@ -59,7 +69,15 @@ module Context =
 
         return
             match answer with
-            | FSharpCheckFileAnswer.Succeeded results -> results
+            | FSharpCheckFileAnswer.Succeeded results ->
+                let errs =
+                    results.Diagnostics
+                    |> Array.filter (fun d -> d.Severity = FSharpDiagnosticSeverity.Error)
+
+                if errs.Length > 0 then
+                    failwith $"Type check produced these errors: %A{errs}"
+
+                results
             | FSharpCheckFileAnswer.Aborted -> failwith "Type check abandoned"
     }
 
