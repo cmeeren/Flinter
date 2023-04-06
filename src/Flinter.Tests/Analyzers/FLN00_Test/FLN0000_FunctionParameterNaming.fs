@@ -35,7 +35,7 @@ let ``Does not trigger on valid function parameter names`` () =
 let ``Does not trigger on method parameter names`` () =
     """
     type A() =
-        method _.A(Foo) = 1
+        member _.A(Foo) = 1
     """
         .Should()
         .ContainOnlyMarkedErrors(analyze)
@@ -60,6 +60,7 @@ let ``Handles inner functions`` () =
     let f1 () =
         let f2 A = ()
                ^
+        ()
     """
         .Should()
         .ContainOnlyMarkedErrors(analyze)
