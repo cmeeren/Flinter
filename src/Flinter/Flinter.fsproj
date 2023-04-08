@@ -15,6 +15,7 @@
   <ItemGroup>
     <None Include="flinter-logo-128x128.png" Pack="True" PackagePath="" />
     <Compile Include="UntypedAst.fs" />
+    <Compile Include="TypedAst.fs" />
     <Compile Include="Analyzers\Helpers.fs" />
     <Compile Include="Analyzers\FLN*\**\*.fs" />
   </ItemGroup>
