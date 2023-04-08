@@ -41,3 +41,11 @@ let createUntypedAnalyzer (getVisitor: _ -> #UntypedAstVisitor) : Analyzer =
         let visitor = getVisitor messages.Add
         visitor.VisitParsedInput context.ParseTree
         messages |> Seq.toList
+
+
+let createTypedAnalyzer (getVisitor: _ -> #TypedAstVisitor) : Analyzer =
+    fun (context: Context) ->
+        let messages = ResizeArray()
+        let visitor = getVisitor (context, messages.Add)
+        visitor.VisitFSharpImplementationFileContents context.TypedTree
+        messages |> Seq.toList
