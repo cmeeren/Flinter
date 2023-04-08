@@ -49,6 +49,9 @@ type StringAssertions with
         let isMarkerLine (s: string) =
             s.Contains(marker) && s |> Seq.forall (fun c -> c = ' ' || c = marker)
 
+        let messageSortKey (m: Message) =
+            m.Range.FileName, m.Range.StartLine, m.Range.StartColumn, m.Range.EndLine, m.Range.EndColumn
+
         let processedSourceWithMarkings = Context.processTestSource this.Subject
         let sourceLines = ResizeArray()
         let ranges = ResizeArray()
@@ -64,7 +67,12 @@ type StringAssertions with
 
         let source = String.concat Environment.NewLine sourceLines
         let msgs = ranges |> Seq.map (fun (start, end') -> Msg(start, end')) |> Seq.toArray
-        let messages = source |> Context.fromProcessedTestSource |> analyze
+
+        let messages =
+            source
+            |> Context.fromProcessedTestSource
+            |> analyze
+            |> List.sortBy messageSortKey
 
         if Array.isEmpty msgs then
             messages.Should().BeEmpty("the source contained no marks")
