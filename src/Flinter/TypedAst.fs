@@ -34,7 +34,6 @@ type TypedAstVisitor() =
 
     default this.VisitFSharpExpr(node: FSharpExpr, path: TypedAstNode list) =
         let withPath n = n, TypedAstNode.FSharpExpr node :: path
-        // TODO: Verify
         node.ImmediateSubExpressions |> List.iter (withPath >> this.VisitFSharpExpr)
 
 
