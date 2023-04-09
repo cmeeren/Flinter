@@ -19,10 +19,15 @@ type TypedAstVisitor() =
     abstract member VisitFSharpEntity: node: FSharpEntity * path: TypedAstNode list -> unit
 
     default this.VisitFSharpEntity(node: FSharpEntity, path: TypedAstNode list) =
-        let _withPath n =
+        let withPath n =
             n, TypedAstNode.FSharpEntity node :: path
 
-        () // TODO
+        // TODO: Verify whether this is correct
+        node.MembersFunctionsAndValues
+        |> Seq.iter (withPath >> this.VisitFSharpMemberOrFunctionOrValue)
+
+        // TODO: Verify whether this is correct
+        node.NestedEntities |> Seq.iter (withPath >> this.VisitFSharpEntity)
 
 
     abstract member VisitFSharpExpr: node: FSharpExpr * path: TypedAstNode list -> unit
