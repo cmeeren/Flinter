@@ -29,6 +29,5 @@ type private Visitor(addMsg) =
         base.VisitSynBinding(node, path)
 
 
-// TODO: Specify analyzer name in attribute? What are these names used for?
 [<Analyzer>]
 let analyze: Analyzer = createUntypedAnalyzer Visitor
