@@ -38,9 +38,6 @@ let isExempted (ty: FSharpType) =
        |> Option.defaultValue false
 
 
-// TODO: Check coverage
-
-
 type private IsExpressionUseBoundVisitor(range) =
     inherit SyntaxVisitorBase<bool>()
 
