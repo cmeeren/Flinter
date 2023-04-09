@@ -78,8 +78,4 @@ type TypedAstVisitor() =
     abstract member VisitFSharpMemberOrFunctionOrValue:
         node: FSharpMemberOrFunctionOrValue * path: TypedAstNode list -> unit
 
-    default this.VisitFSharpMemberOrFunctionOrValue(node: FSharpMemberOrFunctionOrValue, path: TypedAstNode list) =
-        let _withPath n =
-            n, TypedAstNode.FSharpMemberOrFunctionOrValue node :: path
-
-        () // TODO
+    default this.VisitFSharpMemberOrFunctionOrValue(_node: FSharpMemberOrFunctionOrValue, _path: TypedAstNode list) = ()
