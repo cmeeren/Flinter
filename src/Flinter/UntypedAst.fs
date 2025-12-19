@@ -836,7 +836,7 @@ type UntypedAstVisitor() =
         | SynTypeDefnKind.Union -> ()
         | SynTypeDefnKind.Abbrev -> ()
         | SynTypeDefnKind.Opaque -> ()
-        | SynTypeDefnKind.Augmentation _ -> ()
+        | SynTypeDefnKind.Augmentation -> ()
         | SynTypeDefnKind.IL -> ()
         | SynTypeDefnKind.Delegate(signature = signature; signatureInfo = signatureInfo) ->
             signature |> withPath |> this.VisitSynType
